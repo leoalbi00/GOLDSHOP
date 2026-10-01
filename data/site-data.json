@@ -1,13 +1,16 @@
 {
   "name": "Compro Oro 123 - Bergamo Centro",
-  "shortName": "Compro Oro 123",
+  "shortName": "123gold",
   "address": {
     "street": "Via Angelo Maj 39/B",
     "city": "Bergamo",
     "cap": "24121",
     "province": "BG",
     "country": "IT",
-    "coordinates": { "lat": 45.6925, "lng": 9.6761 },
+    "coordinates": {
+      "lat": 45.6925,
+      "lng": 9.6761
+    },
     "landmark": "A pochi minuti a piedi dalla Stazione FS di Bergamo"
   },
   "contacts": {
@@ -17,13 +20,42 @@
     "email": "123goldbergamo@gmail.com"
   },
   "hours": [
-    { "days": "Lunedì - Venerdì", "hours": "09:30 - 12:30 | 15:00 - 18:30" },
-    { "days": "Sabato", "hours": "Su appuntamento" },
-    { "days": "Domenica", "hours": "Chiuso" }
+    {
+      "days": "Lunedì - Venerdì",
+      "hours": "09:30 - 12:30 | 15:00 - 18:30"
+    },
+    {
+      "days": "Sabato",
+      "hours": "Su appuntamento"
+    },
+    {
+      "days": "Domenica",
+      "hours": "Chiuso"
+    }
   ],
   "openingHoursSpecification": [
-    { "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "09:30", "closes": "12:30" },
-    { "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "15:00", "closes": "18:30" }
+    {
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "09:30",
+      "closes": "12:30"
+    },
+    {
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "15:00",
+      "closes": "18:30"
+    }
   ],
   "trust": {
     "googleRating": 4.9,
@@ -51,22 +83,7 @@
     "payoutRatio": 0.94,
     "voucherValidityHours": 24
   },
-  "priceHistory": {
-    "_note": "Serie di esempio (€/g oro 24K): sostituire con lo storico reale.",
-    "points": [
-      { "month": "2025-10", "gold24k": 66.1 },
-      { "month": "2025-11", "gold24k": 67.0 },
-      { "month": "2025-12", "gold24k": 67.8 },
-      { "month": "2026-01", "gold24k": 68.9 },
-      { "month": "2026-02", "gold24k": 69.4 },
-      { "month": "2026-03", "gold24k": 70.2 },
-      { "month": "2026-04", "gold24k": 71.5 },
-      { "month": "2026-05", "gold24k": 71.1 },
-      { "month": "2026-06", "gold24k": 72.4 },
-      { "month": "2026-07", "gold24k": 73.0 },
-      { "month": "2026-08", "gold24k": 73.9 },
-      { "month": "2026-09", "gold24k": 74.5 },
-      { "month": "2026-10", "gold24k": 74.8 }
-    ]
+  "links": {
+    "googleReviews": "https://www.google.com/maps/search/?api=1&query=Compro+Oro+123+Via+Angelo+Maj+39B+Bergamo"
   }
 }

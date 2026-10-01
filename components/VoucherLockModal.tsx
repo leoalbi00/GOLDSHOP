@@ -30,7 +30,7 @@ function voucherCode(v: VoucherData): string {
   return `CO123-${digest.slice(0, 4)}-${digest.slice(4, 8)}`;
 }
 
-export default function VoucherModal({ voucher, onClose }: Props) {
+export default function VoucherLockModal({ voucher, onClose }: Props) {
   const details = useMemo(() => {
     if (!voucher) return null;
     const code = voucherCode(voucher);
@@ -133,6 +133,7 @@ export default function VoucherModal({ voucher, onClose }: Props) {
               <MessageCircle className="w-5 h-5" />
               Invia su WhatsApp
             </a>
+            <p className="mt-2 text-center text-xs text-zinc-500 font-mono">{siteData.contacts.whatsapp}</p>
           </motion.div>
         </motion.div>
       )}
