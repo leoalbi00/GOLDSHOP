@@ -1,13 +1,14 @@
 "use client";
-import { useEffect, useMemo } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useMemo } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import CryptoJS from "crypto-js";
 import dayjs from "dayjs";
 import "dayjs/locale/it";
-import { X, MapPin, MessageCircle, Clock } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import type { Purity } from "@/lib/pricing";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export interface VoucherData {
   purity: Purity;
@@ -30,113 +31,75 @@ function voucherCode(v: VoucherData): string {
   return `CO123-${digest.slice(0, 4)}-${digest.slice(4, 8)}`;
 }
 
+const gramsFmt = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 2 });
+
 export default function VoucherLockModal({ voucher, onClose }: Props) {
   const details = useMemo(() => {
     if (!voucher) return null;
     const code = voucherCode(voucher);
     const expires = dayjs(voucher.issuedAt).add(siteData.pricing.voucherValidityHours, "hour").locale("it");
+    const grams = gramsFmt.format(voucher.grams);
     const summary =
-      `Voucher ${code} - ${siteData.shortName}\n` +
-      `${voucher.purity.label} · ${voucher.grams} g · stima ${voucher.amount}\n` +
+      `Voucher ${code} - ${siteData.name}\n` +
+      `${voucher.purity.label} · ${grams} g · stima ${voucher.amount}\n` +
       `Valido fino al ${expires.format("DD/MM/YYYY HH:mm")}\n` +
       `${siteData.address.street}, ${siteData.address.cap} ${siteData.address.city}`;
-    return { code, expires, summary };
+    return { code, expires, grams, summary };
   }, [voucher]);
-
-  useEffect(() => {
-    if (!voucher) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [voucher, onClose]);
 
   const waNumber = siteData.contacts.whatsapp.replace(/\D/g, "");
 
   return (
-    <AnimatePresence>
+    <Dialog open={!!voucher} onOpenChange={(open) => !open && onClose()}>
       {voucher && details && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="voucher-title"
-            className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border border-amber-500/40 bg-gradient-to-b from-zinc-900 to-black p-6 md:p-8 shadow-2xl shadow-amber-500/20"
-            initial={{ scale: 0.92, y: 24 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.92, y: 24 }}
-            transition={{ type: "spring", stiffness: 260, damping: 22 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Chiudi"
-              className="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
-            >
-              <X className="w-5 h-5" />
-            </button>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Quotazione bloccata</DialogTitle>
+            <DialogDescription>
+              Mostra questo codice in negozio, {siteData.address.street}, entro il{" "}
+              {details.expires.format("D MMMM [alle] HH:mm")}.
+            </DialogDescription>
+          </DialogHeader>
 
-            <span className="text-xs uppercase tracking-[0.2em] text-amber-400 font-bold">Prezzo bloccato</span>
-            <h3 id="voucher-title" className="text-2xl font-serif font-bold text-white mt-1">
-              Il tuo voucher di garanzia
-            </h3>
-
-            <div className="mt-6 flex flex-col items-center rounded-2xl border border-dashed border-amber-500/40 bg-black p-5">
-              <div className="rounded-xl bg-white p-3">
-                <QRCodeSVG value={details.summary} size={176} level="M" />
-              </div>
-              <div className="mt-4 font-mono text-lg font-bold tracking-widest text-amber-300">{details.code}</div>
-              <div className="mt-3 w-full grid grid-cols-3 gap-2 text-center text-xs">
-                <div>
-                  <div className="text-zinc-500">Caratura</div>
-                  <div className="font-semibold text-white">{voucher.purity.id}</div>
-                </div>
-                <div>
-                  <div className="text-zinc-500">Peso</div>
-                  <div className="font-semibold text-white">{voucher.grams} g</div>
-                </div>
-                <div>
-                  <div className="text-zinc-500">Stima</div>
-                  <div className="font-mono font-semibold text-emerald-400">{voucher.amount}</div>
-                </div>
-              </div>
+          <div className="mt-5 flex flex-col items-center rounded-lg border border-border bg-muted p-5">
+            <div className="rounded-md bg-white p-3 shadow-sm">
+              <QRCodeSVG value={details.summary} size={168} level="M" fgColor="#0f172a" />
             </div>
+            <div className="mt-4 font-mono text-base font-semibold tracking-widest">{details.code}</div>
+          </div>
 
-            <ul className="mt-5 space-y-2 text-sm text-zinc-300">
-              <li className="flex items-start gap-2">
-                <Clock className="w-4 h-4 mt-0.5 text-amber-400 shrink-0" />
-                Valido fino al {details.expires.format("dddd D MMMM, HH:mm")}
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 mt-0.5 text-amber-400 shrink-0" />
-                Mostralo in negozio: {siteData.address.street}, {siteData.address.city}
-              </li>
-            </ul>
-            <p className="mt-3 text-[11px] text-zinc-500">
-              La stima è confermata previa pesatura su bilancia omologata e verifica della caratura in negozio.
-            </p>
+          <dl className="mt-5 grid grid-cols-3 divide-x divide-border rounded-lg border border-border text-center text-sm">
+            <div className="p-3">
+              <dt className="text-xs text-muted-foreground">Caratura</dt>
+              <dd className="font-medium">{voucher.purity.id === "AG" ? "Argento" : voucher.purity.id}</dd>
+            </div>
+            <div className="p-3">
+              <dt className="text-xs text-muted-foreground">Peso</dt>
+              <dd className="font-medium tabular-nums">{details.grams} g</dd>
+            </div>
+            <div className="p-3">
+              <dt className="text-xs text-muted-foreground">Stima</dt>
+              <dd className="font-semibold tabular-nums text-guarantee">{voucher.amount}</dd>
+            </div>
+          </dl>
 
+          <Button asChild variant="guarantee" size="lg" className="mt-5 w-full">
             <a
               href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                 `Buongiorno, ho bloccato questa quotazione online:\n${details.summary}`,
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold flex items-center justify-center gap-2 transition-colors"
             >
-              <MessageCircle className="w-5 h-5" />
+              <MessageCircle />
               Invia su WhatsApp
             </a>
-            <p className="mt-2 text-center text-xs text-zinc-500 font-mono">{siteData.contacts.whatsapp}</p>
-          </motion.div>
-        </motion.div>
+          </Button>
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            La stima è confermata previa pesatura su bilancia omologata e verifica della caratura.
+          </p>
+        </DialogContent>
       )}
-    </AnimatePresence>
+    </Dialog>
   );
 }

@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import { Inter, Playfair_Display } from "next/font/google";
 import type { FinancialService, Graph, LocalBusiness, OpeningHoursSpecification, PostalAddress } from "schema-dts";
 import siteData from "@/data/site-data.json";
 import "./globals.css";
+
+const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap" });
+const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const { address, contacts, trust } = siteData;
@@ -108,7 +112,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it">
+    <html lang="it" className={`${serif.variable} ${sans.variable}`}>
       <body className="antialiased min-h-screen">
         <script
           type="application/ld+json"

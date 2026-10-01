@@ -76,14 +76,17 @@
     "Pagamento Immediato nei termini di legge"
   ],
   "pricing": {
-    "_note": "Valori di riferimento da aggiornare (o sostituire con un feed reale in app/api/quotes/route.ts).",
+    "_note": "Valori di riferimento da aggiornare (o sostituire con un feed reale in app/api/quotes/route.ts). prevClose = chiusura precedente, usata per la variazione %.",
     "updatedAt": "2026-10-01",
     "gold24kEurPerGram": 74.8,
+    "gold24kPrevClose": 74.5,
     "silver999EurPerGram": 0.88,
+    "silver999PrevClose": 0.875,
     "payoutRatio": 0.94,
     "voucherValidityHours": 24
   },
   "links": {
     "googleReviews": "https://www.google.com/maps/search/?api=1&query=Compro+Oro+123+Via+Angelo+Maj+39B+Bergamo"
-  }
+  },
+  "payment": "Bonifico o contanti nei limiti di legge"
 }

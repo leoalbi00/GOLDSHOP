@@ -24,6 +24,8 @@ export interface Quote {
   id: string;
   label: string;
   eurPerGram: number;
+  /** Variazione % rispetto alla chiusura precedente. */
+  changePct: number;
 }
 
 export interface QuotesPayload {
@@ -39,12 +41,35 @@ export function spotPerGram(p: Purity, gold24k: number, silver: number): BigNumb
   return new BigNumber(base).times(p.fineness);
 }
 
-export function buildQuotes(gold24k: number, silver: number): Quote[] {
-  return PURITIES.map((p) => ({
-    id: p.id,
-    label: p.label,
-    eurPerGram: spotPerGram(p, gold24k, silver).decimalPlaces(2).toNumber(),
-  }));
+export function buildQuotes(
+  gold24k: number,
+  silver: number,
+  prev: { gold24k: number; silver: number },
+): Quote[] {
+  return PURITIES.map((p) => {
+    const now = p.metal === "gold" ? gold24k : silver;
+    const before = p.metal === "gold" ? prev.gold24k : prev.silver;
+    return {
+      id: p.id,
+      label: p.label,
+      eurPerGram: spotPerGram(p, gold24k, silver).decimalPlaces(2).toNumber(),
+      changePct: before ? new BigNumber(now).minus(before).div(before).times(100).decimalPlaces(2).toNumber() : 0,
+    };
+  });
+}
+
+/** Quotazioni di riferimento lette da data/site-data.json. */
+export function referenceQuotes(): QuotesPayload {
+  const p = siteData.pricing;
+  return {
+    updatedAt: p.updatedAt,
+    source: "reference",
+    base: { gold24k: p.gold24kEurPerGram, silver: p.silver999EurPerGram },
+    quotes: buildQuotes(p.gold24kEurPerGram, p.silver999EurPerGram, {
+      gold24k: p.gold24kPrevClose,
+      silver: p.silver999PrevClose,
+    }),
+  };
 }
 
 /** Stima netta riconosciuta al cliente, come importo Dinero in centesimi di euro. */

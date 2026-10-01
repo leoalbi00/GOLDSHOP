@@ -1,139 +1,113 @@
 "use client";
 import { useMemo, useState } from "react";
-import confetti from "canvas-confetti";
-import { Award, Scale, Lock, Clock } from "lucide-react";
+import { Lock } from "lucide-react";
 import siteData from "@/data/site-data.json";
-import { PURITIES, estimatePayout, formatEur, spotPerGram, type Purity } from "@/lib/pricing";
+import { PURITIES, estimatePayout, formatEur, spotPerGram } from "@/lib/pricing";
 import { useQuotes } from "@/lib/useQuotes";
-import { cn } from "@/lib/cn";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import VoucherLockModal, { type VoucherData } from "@/components/VoucherLockModal";
 
-const MIN_GRAMS = 1;
-const MAX_GRAMS = 500;
+const TAB_IDS = ["18K", "24K", "14K", "AG"];
+const TABS = TAB_IDS.map((id) => PURITIES.find((p) => p.id === id)!);
+const FINENESS_LABEL: Record<string, string> = { "18K": "750", "24K": "999", "14K": "585", AG: "999" };
+const MAX_GRAMS = 5000;
 
-export default function GoldCalculator({ className }: { className?: string }) {
+/** Accetta sia "15,5" che "15.5"; restituisce null se non valido. */
+function parseGrams(raw: string): number | null {
+  const n = Number(raw.replace(",", ".").trim());
+  return Number.isFinite(n) && n > 0 && n <= MAX_GRAMS ? n : null;
+}
+
+export default function GoldCalculator() {
   const { gold24k, silver } = useQuotes();
-  const [grams, setGrams] = useState(15);
-  const [purity, setPurity] = useState<Purity>(PURITIES[1]);
+  const [purityId, setPurityId] = useState("18K");
+  const [rawGrams, setRawGrams] = useState("15");
   const [voucher, setVoucher] = useState<VoucherData | null>(null);
 
+  const purity = TABS.find((p) => p.id === purityId) ?? TABS[0];
+  const grams = parseGrams(rawGrams);
   const payout = useMemo(
-    () => estimatePayout(purity, grams, gold24k, silver),
+    () => (grams ? estimatePayout(purity, grams, gold24k, silver) : null),
     [purity, grams, gold24k, silver],
   );
   const spot = spotPerGram(purity, gold24k, silver).toNumber();
-  const fillPct = ((grams - MIN_GRAMS) / (MAX_GRAMS - MIN_GRAMS)) * 100;
-
-  function lockPrice() {
-    const burst = (originX: number) =>
-      confetti({
-        particleCount: 90,
-        spread: 70,
-        startVelocity: 45,
-        origin: { x: originX, y: 0.65 },
-        colors: ["#f59e0b", "#fcd34d", "#fef3c7", "#10b981"],
-      });
-    burst(0.3);
-    burst(0.7);
-    setVoucher({ purity, grams, amount: formatEur(payout), issuedAt: new Date() });
-  }
+  const invalid = rawGrams.trim() !== "" && grams === null;
 
   return (
-    <div
-      id="calcolatore"
-      className={cn(
-        "scroll-mt-24 rounded-3xl border border-amber-500/25 bg-zinc-950/90 backdrop-blur p-6 md:p-8 shadow-2xl shadow-amber-500/10",
-        className,
-      )}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-bold">Stima istantanea</span>
-          <h2 className="text-xl md:text-2xl font-serif font-bold text-white mt-1">Quanto vale il tuo oro?</h2>
-        </div>
-        <div className="text-right">
-          <span className="text-[11px] text-zinc-500 block">{purity.label}</span>
-          <span className="font-mono font-bold text-amber-300">{formatEur(spot)}/g</span>
-        </div>
-      </div>
+    <Card id="calcolatore" className="scroll-mt-28 shadow-md">
+      <CardHeader className="border-b border-border">
+        <CardTitle>Stima il valore del tuo oro</CardTitle>
+        <CardDescription>Calcolo sulla quotazione indicativa, aggiornata ogni minuto.</CardDescription>
+      </CardHeader>
 
-      <fieldset className="mt-6">
-        <legend className="text-sm font-semibold text-zinc-300 mb-3 flex items-center gap-2">
-          <Award className="w-4 h-4 text-amber-400" /> Caratura
-        </legend>
-        <div className="grid grid-cols-5 gap-2">
-          {PURITIES.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              aria-pressed={purity.id === p.id}
-              title={p.desc}
-              onClick={() => setPurity(p)}
-              className={cn(
-                "rounded-xl border py-2.5 font-bold transition-all",
-                purity.id === p.id
-                  ? "bg-amber-500/15 border-amber-400 text-white shadow-lg shadow-amber-500/10"
-                  : "bg-black border-zinc-800 text-zinc-400 hover:border-zinc-600",
-              )}
-            >
-              {p.id}
-            </button>
-          ))}
+      <CardContent className="space-y-6 pt-6">
+        <div className="space-y-2">
+          <span className="text-sm font-medium">Metallo e caratura</span>
+          <Tabs value={purityId} onValueChange={setPurityId}>
+            <TabsList>
+              {TABS.map((p) => (
+                <TabsTrigger key={p.id} value={p.id}>
+                  <span className="font-semibold">{p.id === "AG" ? "Argento" : p.id}</span>
+                  <span className="text-[11px] font-normal text-muted-foreground">{FINENESS_LABEL[p.id]}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
-        <p className="mt-2 text-xs text-zinc-500">{purity.desc}</p>
-      </fieldset>
 
-      <div className="mt-6">
-        <div className="flex justify-between items-center mb-3">
-          <label htmlFor="grams" className="text-sm font-semibold text-zinc-300 flex items-center gap-2">
-            <Scale className="w-4 h-4 text-amber-400" /> Peso
+        <div className="space-y-2">
+          <label htmlFor="grams" className="text-sm font-medium">
+            Peso in grammi
           </label>
-          <span className="text-2xl font-mono font-bold text-amber-300 tabular-nums">{grams} g</span>
+          <div className="relative">
+            <Input
+              id="grams"
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder="es. 15"
+              value={rawGrams}
+              onChange={(e) => setRawGrams(e.target.value.replace(/[^\d.,]/g, ""))}
+              aria-invalid={invalid}
+              aria-describedby="grams-help"
+              className="h-12 pr-10 text-lg font-semibold tabular-nums aria-[invalid=true]:border-rose-400"
+            />
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">g</span>
+          </div>
+          <p id="grams-help" className={invalid ? "text-xs text-rose-600" : "text-xs text-muted-foreground"}>
+            {invalid ? `Inserisci un peso tra 0,1 e ${MAX_GRAMS} g.` : `Quotazione ${purity.label}: ${formatEur(spot)}/g`}
+          </p>
         </div>
-        <input
-          id="grams"
-          type="range"
-          min={MIN_GRAMS}
-          max={MAX_GRAMS}
-          step={1}
-          value={grams}
-          onChange={(e) => setGrams(Number(e.target.value))}
-          className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-amber-500"
-          style={{ background: `linear-gradient(90deg, #f59e0b ${fillPct}%, #27272a ${fillPct}%)` }}
-        />
-        <div className="flex justify-between text-[11px] text-zinc-600 font-mono mt-1">
-          <span>{MIN_GRAMS} g</span>
-          <span>{MAX_GRAMS} g</span>
-        </div>
-      </div>
 
-      <div className="mt-6 rounded-2xl border border-zinc-800 bg-black p-5">
-        <span className="text-xs uppercase tracking-wider text-zinc-500 font-semibold">Stima netta</span>
-        <div
-          aria-live="polite"
-          className="text-4xl md:text-5xl font-black font-mono text-emerald-400 tracking-tight mt-1 tabular-nums"
+        <div className="rounded-lg border border-border bg-muted p-5">
+          <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Stima netta</div>
+          <div aria-live="polite" className="mt-1 text-4xl font-semibold tracking-tight tabular-nums text-guarantee">
+            {payout ? formatEur(payout) : "—"}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Valore indicativo, confermato in negozio dopo pesatura e verifica della caratura.
+          </p>
+        </div>
+
+        <Button
+          size="lg"
+          className="w-full"
+          disabled={!payout || !grams}
+          onClick={() =>
+            payout &&
+            grams &&
+            setVoucher({ purity, grams, amount: formatEur(payout), issuedAt: new Date() })
+          }
         >
-          {formatEur(payout)}
-        </div>
-        <p className="text-[11px] text-zinc-500 mt-2">
-          Indicativa: il valore finale è confermato in negozio con pesatura e verifica della caratura.
-        </p>
-      </div>
-
-      <button
-        type="button"
-        onClick={lockPrice}
-        className="mt-5 w-full py-4 px-6 rounded-xl bg-gradient-to-r from-amber-300 via-amber-500 to-amber-600 hover:brightness-110 active:scale-[0.99] text-black font-bold flex items-center justify-center gap-2 shadow-xl shadow-amber-500/25 transition-all"
-      >
-        <Lock className="w-5 h-5" />
-        BLOCCA PREZZO 24H
-      </button>
-      <p className="mt-3 text-xs text-zinc-500 flex items-center justify-center gap-1.5">
-        <Clock className="w-3.5 h-3.5 text-amber-400" />
-        Ricevi un voucher con QR valido {siteData.pricing.voucherValidityHours} ore
-      </p>
+          <Lock />
+          Blocca questa quotazione (Valida {siteData.pricing.voucherValidityHours}h)
+        </Button>
+      </CardContent>
 
       <VoucherLockModal voucher={voucher} onClose={() => setVoucher(null)} />
-    </div>
+    </Card>
   );
 }
