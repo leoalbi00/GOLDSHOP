@@ -1,11 +1,26 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
-import type { FinancialService, Graph, LocalBusiness, OpeningHoursSpecification, PostalAddress } from "schema-dts";
+import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
+import type {
+  FinancialService,
+  Graph,
+  LocalBusiness,
+  OpeningHoursSpecification,
+  PostalAddress,
+  WebSite,
+} from "schema-dts";
 import siteData from "@/data/site-data.json";
+import SmoothScroll from "@/components/SmoothScroll";
+import { Toaster } from "sonner";
 import "./globals.css";
 
-const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap" });
-const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const serif = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const { address, contacts, trust } = siteData;
@@ -45,6 +60,7 @@ const shared = {
     reviewCount: trust.reviewsCount,
   },
   hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address.street}, ${address.cap} ${address.city}`)}`,
+  sameAs: [siteData.links.googleReviews],
   currenciesAccepted: "EUR",
   priceRange: "€€",
 } as const;
@@ -52,6 +68,14 @@ const shared = {
 const jsonLd: Graph = {
   "@context": "https://schema.org",
   "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: siteData.shortName,
+      inLanguage: "it-IT",
+      publisher: { "@id": `${siteUrl}/#localbusiness` },
+    } satisfies WebSite,
     {
       "@type": "LocalBusiness",
       "@id": `${siteUrl}/#localbusiness`,
@@ -113,12 +137,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it" className={`${serif.variable} ${sans.variable}`}>
-      <body className="antialiased min-h-screen">
+      <body className="min-h-screen antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
+        <Toaster
+          position="bottom-center"
+          toastOptions={{ className: "!rounded-sm !border-hairline !bg-paper !font-sans !text-foreground" }}
+        />
       </body>
     </html>
   );

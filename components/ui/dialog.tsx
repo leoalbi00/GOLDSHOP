@@ -17,6 +17,7 @@ export function DialogContent({
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-[2px] data-[state=open]:animate-[fadeIn_150ms_ease-out]" />
       <DialogPrimitive.Content
+        data-lenis-prevent
         className={cn(
           "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md max-h-[90vh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-white p-6 shadow-lg focus:outline-none",
           className,

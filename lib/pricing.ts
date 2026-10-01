@@ -18,6 +18,7 @@ export const PURITIES: Purity[] = [
   { id: "14K", label: "Oro 14K", metal: "gold", fineness: 0.585, desc: "Oro 585" },
   { id: "9K", label: "Oro 9K", metal: "gold", fineness: 0.375, desc: "Oro 375" },
   { id: "AG", label: "Argento", metal: "silver", fineness: 0.999, desc: "Argento 999" },
+  { id: "AG925", label: "Argento 925", metal: "silver", fineness: 0.925, desc: "Argento sterling (925)" },
 ];
 
 export interface Quote {
@@ -32,6 +33,8 @@ export interface QuotesPayload {
   updatedAt: string;
   source: "reference" | "feed";
   base: { gold24k: number; silver: number };
+  /** Chiusura precedente, base della variazione %. */
+  prev: { gold24k: number; silver: number };
   quotes: Quote[];
 }
 
@@ -61,15 +64,19 @@ export function buildQuotes(
 /** Quotazioni di riferimento lette da data/site-data.json. */
 export function referenceQuotes(): QuotesPayload {
   const p = siteData.pricing;
+  const prev = { gold24k: p.gold24kPrevClose, silver: p.silver999PrevClose };
   return {
     updatedAt: p.updatedAt,
     source: "reference",
     base: { gold24k: p.gold24kEurPerGram, silver: p.silver999EurPerGram },
-    quotes: buildQuotes(p.gold24kEurPerGram, p.silver999EurPerGram, {
-      gold24k: p.gold24kPrevClose,
-      silver: p.silver999PrevClose,
-    }),
+    prev,
+    quotes: buildQuotes(p.gold24kEurPerGram, p.silver999EurPerGram, prev),
   };
+}
+
+/** Valore €/g riconosciuto al cliente: quotazione del titolo meno lo spread del negozio, mai negativo. */
+export function offerPerGram(p: Purity, gold24k: number, silver: number, spreadPerGram: number): BigNumber {
+  return BigNumber.max(spotPerGram(p, gold24k, silver).minus(spreadPerGram), 0);
 }
 
 /** Stima netta riconosciuta al cliente, come importo Dinero in centesimi di euro. */
@@ -78,15 +85,18 @@ export function estimatePayout(
   grams: number,
   gold24k: number,
   silver: number,
-  payoutRatio: number = siteData.pricing.payoutRatio,
+  spreadPerGram: number,
 ): Dinero<number> {
-  const cents = spotPerGram(p, gold24k, silver)
+  const cents = offerPerGram(p, gold24k, silver, spreadPerGram)
     .times(grams)
-    .times(payoutRatio)
     .times(100)
     .integerValue(BigNumber.ROUND_FLOOR)
     .toNumber();
   return dinero({ amount: cents, currency: EUR });
+}
+
+export function purityById(id: string): Purity | undefined {
+  return PURITIES.find((p) => p.id === id);
 }
 
 const eurFormatter = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });

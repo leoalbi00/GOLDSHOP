@@ -4,3 +4,6 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 .env*.local
+
+# Archivio operativo locale (voucher, schede clienti OAM, prenotazioni): dati personali, mai in git
+data/store/

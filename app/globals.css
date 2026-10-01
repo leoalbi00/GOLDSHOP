@@ -1,32 +1,56 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-playfair), "Didot", Georgia, serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), "Didot", Georgia, serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
-  --color-background: #ffffff;
-  --color-muted: #f8fafc;
-  --color-ivory: #fbf9f4;
-  --color-foreground: #0f172a;
-  --color-muted-foreground: #64748b;
-  --color-border: #e2e8f0;
-  --color-gold: #b45309;
-  --color-gold-light: #d97706;
-  --color-gold-soft: #fef3c7;
-  --color-guarantee: #059669;
-  --color-guarantee-soft: #ecfdf5;
+  /* Avorio marmoreo, grafite, bronzo opaco */
+  --color-background: #faf9f6;
+  --color-ivory: #faf9f6;
+  --color-paper: #ffffff;
+  --color-muted: #f3f1ec;
+  --color-foreground: #111827;
+  --color-muted-foreground: #6b6760;
+  --color-border: #e6e2d9;
+  --color-hairline: #d9d4c8;
+  --color-gold: #92400e;
+  --color-gold-light: #b45309;
+  --color-gold-soft: #f6efe4;
+  --color-guarantee: #047857;
+  --color-guarantee-soft: #ecf5f0;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {
   color-scheme: light;
-  scroll-behavior: smooth;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
-  font-feature-settings: "tnum" 1, "cv11" 1;
+  font-feature-settings: "tnum" 1;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-paper);
+}
+
+/* Lenis: lo scroll nativo resta attivo, Lenis interpola la posizione */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
 }
 
 /* Nasconde le frecce degli input numerici */
@@ -37,6 +61,18 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Riga di rivelazione per i titoli animati: maschera ogni parola */
+.reveal-line {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+}
+.reveal-word {
+  display: inline-block;
+  will-change: transform;
 }
 
 @keyframes fadeIn {

@@ -1,98 +1,134 @@
 "use client";
-import { useMemo } from "react";
+import { useState } from "react";
+import axios from "axios";
 import { QRCodeSVG } from "qrcode.react";
-import CryptoJS from "crypto-js";
 import dayjs from "dayjs";
 import "dayjs/locale/it";
-import { MessageCircle } from "lucide-react";
+import { toast } from "sonner";
+import { Check, MessageCircle, Send } from "lucide-react";
 import siteData from "@/data/site-data.json";
-import type { Purity } from "@/lib/pricing";
+import { formatEur } from "@/lib/pricing";
+import type { Voucher } from "@/lib/vouchers";
+import { voucherToCustomerLink, voucherToShopLink } from "@/lib/whatsapp-engine";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export interface VoucherData {
-  purity: Purity;
-  grams: number;
-  amount: string;
-  issuedAt: Date;
-}
-
 interface Props {
-  voucher: VoucherData | null;
+  voucher: Voucher | null;
   onClose: () => void;
 }
 
-/** Codice univoco breve derivato da contenuto del voucher + nonce casuale. */
-function voucherCode(v: VoucherData): string {
-  const nonce = CryptoJS.lib.WordArray.random(8).toString();
-  const digest = CryptoJS.SHA256(`${v.purity.id}|${v.grams}|${v.amount}|${v.issuedAt.toISOString()}|${nonce}`)
-    .toString()
-    .toUpperCase();
-  return `CO123-${digest.slice(0, 4)}-${digest.slice(4, 8)}`;
-}
+const gramsFmt = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 1 });
+const field =
+  "h-11 w-full border-b border-hairline bg-transparent px-0 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-gold";
 
-const gramsFmt = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 2 });
+/** Il cliente lascia nome e cellulare e riceve il voucher su WhatsApp. */
+function SendToMyself({ voucher }: { voucher: Voucher }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-export default function VoucherLockModal({ voucher, onClose }: Props) {
-  const details = useMemo(() => {
-    if (!voucher) return null;
-    const code = voucherCode(voucher);
-    const expires = dayjs(voucher.issuedAt).add(siteData.pricing.voucherValidityHours, "hour").locale("it");
-    const grams = gramsFmt.format(voucher.grams);
-    const summary =
-      `Voucher ${code} - ${siteData.name}\n` +
-      `${voucher.purity.label} · ${grams} g · stima ${voucher.amount}\n` +
-      `Valido fino al ${expires.format("DD/MM/YYYY HH:mm")}\n` +
-      `${siteData.address.street}, ${siteData.address.cap} ${siteData.address.city}`;
-    return { code, expires, grams, summary };
-  }, [voucher]);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    // Apertura sincrona: i browser bloccano i popup aperti dopo un await.
+    const win = window.open("about:blank", "_blank");
+    if (win) win.opener = null;
+    try {
+      await axios.post(`/api/vouchers/${voucher.code}/contact`, { name, phone, consent });
+      setSent(true);
+      const url = voucherToCustomerLink(phone, voucher);
+      if (win) win.location.href = url;
+      else window.location.href = url;
+    } catch (err) {
+      win?.close();
+      const msg = axios.isAxiosError<{ error?: string }>(err) ? err.response?.data?.error : undefined;
+      toast.error(msg ?? "Invio non riuscito, riprova.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
-  const waNumber = siteData.contacts.whatsapp.replace(/\D/g, "");
+  if (sent) {
+    return (
+      <p className="mt-5 flex items-center gap-2 text-sm text-guarantee">
+        <Check className="size-4" /> Voucher inviato su WhatsApp. Ti ricontatteremo se serve.
+      </p>
+    );
+  }
 
   return (
+    <form onSubmit={submit} className="mt-6 space-y-3">
+      <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        Ricevi il voucher su WhatsApp
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <input className={field} placeholder="Nome" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} autoComplete="given-name" />
+        <input
+          className={field}
+          placeholder="Cellulare"
+          inputMode="tel"
+          autoComplete="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value.replace(/[^+\d\s]/g, ""))}
+          required
+          pattern="[+\d\s]{6,20}"
+        />
+      </div>
+      <label className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+        <input type="checkbox" className="mt-0.5 accent-[#92400e]" checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
+        Acconsento a essere ricontattato da {siteData.shortName} per questo voucher. I dati non sono usati per altri scopi.
+      </label>
+      <Button type="submit" variant="guarantee" size="lg" className="w-full rounded-sm" disabled={busy}>
+        <Send /> Inviami il voucher
+      </Button>
+    </form>
+  );
+}
+
+export default function VoucherLockModal({ voucher, onClose }: Props) {
+  return (
     <Dialog open={!!voucher} onOpenChange={(open) => !open && onClose()}>
-      {voucher && details && (
+      {voucher && (
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Quotazione bloccata</DialogTitle>
             <DialogDescription>
               Mostra questo codice in negozio, {siteData.address.street}, entro il{" "}
-              {details.expires.format("D MMMM [alle] HH:mm")}.
+              {dayjs(voucher.expiresAt).locale("it").format("D MMMM [alle] HH:mm")}.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-5 flex flex-col items-center rounded-lg border border-border bg-muted p-5">
-            <div className="rounded-md bg-white p-3 shadow-sm">
-              <QRCodeSVG value={details.summary} size={168} level="M" fgColor="#0f172a" />
+          <div className="mt-5 flex flex-col items-center border border-border bg-muted p-5">
+            <div className="bg-white p-3 shadow-sm">
+              <QRCodeSVG value={voucher.code} size={168} level="M" fgColor="#111827" />
             </div>
-            <div className="mt-4 font-mono text-base font-semibold tracking-widest">{details.code}</div>
+            <div className="mt-4 font-mono text-base font-semibold tracking-widest">{voucher.code}</div>
           </div>
 
-          <dl className="mt-5 grid grid-cols-3 divide-x divide-border rounded-lg border border-border text-center text-sm">
+          <dl className="mt-5 grid grid-cols-3 divide-x divide-border border border-border text-center text-sm">
             <div className="p-3">
               <dt className="text-xs text-muted-foreground">Caratura</dt>
-              <dd className="font-medium">{voucher.purity.id === "AG" ? "Argento" : voucher.purity.id}</dd>
+              <dd className="font-medium">{voucher.metal === "silver" ? voucher.purityLabel : voucher.purityId}</dd>
             </div>
             <div className="p-3">
               <dt className="text-xs text-muted-foreground">Peso</dt>
-              <dd className="font-medium tabular-nums">{details.grams} g</dd>
+              <dd className="font-medium tabular-nums">{gramsFmt.format(voucher.grams)} g</dd>
             </div>
             <div className="p-3">
-              <dt className="text-xs text-muted-foreground">Stima</dt>
-              <dd className="font-semibold tabular-nums text-guarantee">{voucher.amount}</dd>
+              <dt className="text-xs text-muted-foreground">Valore bloccato</dt>
+              <dd className="font-semibold tabular-nums text-guarantee">{formatEur(voucher.amountCents / 100)}</dd>
             </div>
           </dl>
 
-          <Button asChild variant="guarantee" size="lg" className="mt-5 w-full">
-            <a
-              href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
-                `Buongiorno, ho bloccato questa quotazione online:\n${details.summary}`,
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+          <SendToMyself voucher={voucher} />
+
+          <Button asChild variant="outline" size="lg" className="mt-3 w-full rounded-sm">
+            <a href={voucherToShopLink(voucher)} target="_blank" rel="noopener noreferrer">
               <MessageCircle />
-              Invia su WhatsApp
+              Scrivi al negozio
             </a>
           </Button>
           <p className="mt-3 text-center text-xs text-muted-foreground">

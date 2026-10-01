@@ -1,34 +1,49 @@
-import { Phone, ShieldCheck } from "lucide-react";
+import { Phone } from "lucide-react";
 import siteData from "@/data/site-data.json";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import LiveStoreBadge from "@/components/LiveStoreBadge";
 
-const { address, contacts } = siteData;
+const { contacts } = siteData;
+
+const NAV = [
+  { href: "#calcolatore", label: "Stima" },
+  { href: "#mercato", label: "Mercato" },
+  { href: "#trasparenza", label: "Trasparenza" },
+  { href: "#riservato", label: "Riservato" },
+  { href: "#visita", label: "Visita" },
+];
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <a href="#" className="flex flex-col leading-none">
-          <span className="font-serif text-2xl font-semibold tracking-tight text-foreground">
-            Compro Oro <span className="text-gold">123</span>
-          </span>
-          <span className="mt-1 text-xs text-muted-foreground">
-            {address.street} · {address.city}
+    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6">
+        <a href="#" className="whitespace-nowrap leading-none" aria-label={`${siteData.name}, torna all'inizio`}>
+          <span className="font-serif text-[1.75rem] font-medium tracking-tight text-foreground">
+            Compro Oro <span className="italic text-gold">123</span>
           </span>
         </a>
 
+        <nav aria-label="Sezioni" className="hidden lg:block">
+          <ul className="flex items-center gap-8 text-sm">
+            {NAV.map((n) => (
+              <li key={n.href}>
+                <a href={n.href} className="text-muted-foreground transition-colors hover:text-foreground">
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         <div className="flex items-center gap-3">
-          <Badge className="hidden sm:inline-flex border-guarantee/20 bg-guarantee-soft text-guarantee">
-            <ShieldCheck /> Iscritto OAM
-          </Badge>
-          <Button asChild variant="outline">
-            <a href={`tel:${contacts.phoneIntl}`}>
-              <Phone />
-              <span className="hidden sm:inline">{contacts.phone}</span>
-              <span className="sm:hidden">Chiama</span>
-            </a>
-          </Button>
+          <LiveStoreBadge className="hidden sm:inline-flex" />
+          <a
+            href={`tel:${contacts.phoneIntl}`}
+            className="inline-flex items-center gap-2 whitespace-nowrap border border-foreground px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-foreground hover:text-background"
+          >
+            <Phone className="size-3.5" />
+            <span className="hidden tabular-nums sm:inline">{contacts.phone}</span>
+            <span className="sm:hidden">Chiama</span>
+          </a>
         </div>
       </div>
     </header>

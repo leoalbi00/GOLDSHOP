@@ -66,7 +66,8 @@
     "legalNotes": [
       "Iscritto al Registro Compro Oro OAM",
       "Bilancia di precisione a vista omologata"
-    ]
+    ],
+    "oamRegistrationNumber": ""
   },
   "services": [
     "Acquisto Oro Usato e Gioielli (24K, 18K, 14K, 9K)",
@@ -82,11 +83,17 @@
     "gold24kPrevClose": 74.5,
     "silver999EurPerGram": 0.88,
     "silver999PrevClose": 0.875,
-    "payoutRatio": 0.94,
-    "voucherValidityHours": 24
+    "voucherValidityHours": 24,
+    "hotLeadGrams": 30,
+    "volatilityAlertPct": 2
   },
   "links": {
-    "googleReviews": "https://www.google.com/maps/search/?api=1&query=Compro+Oro+123+Via+Angelo+Maj+39B+Bergamo"
+    "googleReviews": "https://www.google.com/maps/search/?api=1&query=Compro+Oro+123+Via+Angelo+Maj+39B+Bergamo",
+    "googlePlaceId": ""
   },
-  "payment": "Bonifico o contanti nei limiti di legge"
+  "payment": "Bonifico o contanti nei limiti di legge",
+  "compliance": {
+    "_note": "D.Lgs. 92/2017, art. 5: le operazioni di compro oro di importo pari o superiore a 500 euro vanno regolate con mezzi tracciabili. Verificare con il consulente prima dell'uso.",
+    "cashLimitEur": 500
+  }
 }
