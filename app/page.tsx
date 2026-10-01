@@ -3,13 +3,18 @@ import LiveTicker from "@/components/LiveTicker";
 import Header from "@/components/Header";
 import HeroVideo from "@/components/HeroVideo";
 import ScrollReveal from "@/components/ScrollReveal";
-import SimpleGoldCalculator from "@/components/SimpleGoldCalculator";
 import TrustAndReviews from "@/components/TrustAndReviews";
-import DirectLocation from "@/components/DirectLocation";
-import LiveGoldTrend from "@/components/LiveGoldTrend";
 import PromoBanner from "@/components/PromoBanner";
+import AboutSection from "@/components/AboutSection";
+import AccordionCalculator from "@/components/AccordionCalculator";
+import ShopGallery from "@/components/ShopGallery";
+import AnimatedReviews from "@/components/AnimatedReviews";
+import LuxuryLocation from "@/components/LuxuryLocation";
+import gallery from "@/data/gallery.json";
 
 const { address, contacts, trust } = siteData;
+/** La galleria compare solo con foto reali (in sviluppo anche vuota, per vedere le cornici da riempire). */
+const showGallery = gallery.photos.length > 0 || process.env.NODE_ENV !== "production";
 
 function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; id: string }) {
   return (
@@ -30,33 +35,44 @@ export default function Home() {
       <main>
         <HeroVideo />
 
-        <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+        <section id="chi-siamo" aria-labelledby="about-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="calc-title" eyebrow="1 · Calcola" title="Quanto vale il tuo oro, adesso." />
+              <SectionTitle id="about-title" eyebrow="Chi siamo" title="123 Gold, il compro oro di Via Angelo Maj." />
             </ScrollReveal>
-            <PromoBanner />
-            <ScrollReveal delay={0.1} parallax={20}>
-              <SimpleGoldCalculator />
+            <ScrollReveal delay={0.1} parallax={12}>
+              <AboutSection />
             </ScrollReveal>
           </div>
         </section>
 
-        <section id="mercato" aria-labelledby="trend-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+        <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="trend-title" eyebrow="Borsa dell'oro" title="Il prezzo, giorno per giorno." />
+              <SectionTitle id="calc-title" eyebrow="Calcola · Domande" title="Quanto vale il tuo oro, adesso." />
             </ScrollReveal>
-            <ScrollReveal delay={0.1} parallax={16}>
-              <LiveGoldTrend />
+            <PromoBanner />
+            <ScrollReveal delay={0.1} parallax={0}>
+              <AccordionCalculator />
             </ScrollReveal>
           </div>
         </section>
+
+        {showGallery && (
+          <section id="galleria" aria-labelledby="gallery-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <ScrollReveal parallax={0}>
+                <SectionTitle id="gallery-title" eyebrow="Il negozio" title="Entra, guarda, pesa con noi." />
+              </ScrollReveal>
+              <ShopGallery />
+            </div>
+          </section>
+        )}
 
         <section id="passaggi" aria-labelledby="steps-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="steps-title" eyebrow="2 · Come funziona" title="Tre passaggi, tutto davanti a te." />
+              <SectionTitle id="steps-title" eyebrow="Come funziona" title="Tre passaggi, tutto davanti a te." />
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <TrustAndReviews />
@@ -64,13 +80,22 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="visita" aria-labelledby="visit-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+        <section id="recensioni" aria-labelledby="reviews-title" className="scroll-mt-24 overflow-hidden border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="visit-title" eyebrow="3 · Vieni in negozio" title="A due passi dalla Stazione." />
+              <SectionTitle id="reviews-title" eyebrow="Dicono di noi" title="La fiducia di Bergamo." />
             </ScrollReveal>
-            <ScrollReveal delay={0.1} parallax={24}>
-              <DirectLocation />
+            <AnimatedReviews />
+          </div>
+        </section>
+
+        <section id="visita" aria-labelledby="visit-title" className="scroll-mt-24 border-b border-border bg-[radial-gradient(ellipse_at_top,#f6efe4,transparent_70%)] py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              <SectionTitle id="visit-title" eyebrow="Vieni a trovarci" title="A due passi dalla Stazione." />
+            </ScrollReveal>
+            <ScrollReveal delay={0.1} parallax={16}>
+              <LuxuryLocation />
             </ScrollReveal>
           </div>
         </section>

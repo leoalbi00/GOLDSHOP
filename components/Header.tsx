@@ -5,8 +5,9 @@ import LiveStoreBadge from "@/components/LiveStoreBadge";
 const { contacts } = siteData;
 
 const NAV = [
+  { href: "#chi-siamo", label: "Chi siamo" },
   { href: "#calcolatore", label: "Calcola" },
-  { href: "#passaggi", label: "Come funziona" },
+  { href: "#recensioni", label: "Recensioni" },
   { href: "#visita", label: "Dove siamo" },
 ];
 

@@ -1,0 +1,9 @@
+{
+  "_note": "Foto reali del negozio. Copia le immagini in public/gallery/ (JPG o WebP, lato lungo ~1600px) e aggiungi una voce per ciascuna in 'photos'. Finché 'photos' è vuoto la galleria non compare sul sito pubblicato.",
+  "photos": [],
+  "slots": [
+    { "id": "insegna", "caption": "L'insegna in Via Angelo Maj 39/B", "example": "/gallery/insegna.jpg" },
+    { "id": "bilancia", "caption": "La bilancia omologata, rivolta verso il cliente", "example": "/gallery/bilancia.jpg" },
+    { "id": "salotto", "caption": "Il salotto riservato per le perizie", "example": "/gallery/salotto.jpg" }
+  ]
+}
