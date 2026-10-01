@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { StoreUnavailableError } from "@/lib/server/store/types";
 import { getAdminSession } from "@/lib/auth/server";
 
 export function clientIp(req: NextRequest): string {
@@ -26,4 +27,20 @@ export function rateLimited(key: string, max: number, windowMs: number): boolean
   }
   h.n += 1;
   return h.n > max;
+}
+
+/**
+ * Avvolge una route: un archivio non configurato diventa 503 con messaggio chiaro, ogni altro errore 500
+ * senza dettagli interni verso il client (il dettaglio resta nei log del server).
+ */
+export function withStore<A extends unknown[]>(handler: (...args: A) => Promise<Response>) {
+  return async (...args: A): Promise<Response> => {
+    try {
+      return await handler(...args);
+    } catch (e) {
+      if (e instanceof StoreUnavailableError) return error(e.message, 503);
+      console.error(e);
+      return error("Errore interno, riprova tra poco", 500);
+    }
+  };
 }

@@ -2,17 +2,17 @@ import { createElement, type ReactElement } from "react";
 import type { NextRequest } from "next/server";
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import { OAMDocument } from "@/lib/pdf/OAMDocumentTemplate";
-import { voucherStore } from "@/lib/server/repos";
-import { denyUnlessAdmin, error } from "@/lib/server/http";
+import { getStore } from "@/lib/server/store";
+import { denyUnlessAdmin, error, withStore } from "@/lib/server/http";
 
 export const dynamic = "force-dynamic";
 
 /** Scheda cliente OAM in PDF per il voucher indicato (?code=CO123-XXXX-XXXX). */
-export async function GET(req: NextRequest) {
+export const GET = withStore(async (req: NextRequest) => {
   const denied = await denyUnlessAdmin();
   if (denied) return denied;
   const code = req.nextUrl.searchParams.get("code");
-  const voucher = (await voucherStore.read()).find((v) => v.code === code);
+  const voucher = code ? await getStore().vouchers.get(code) : null;
   if (!voucher) return error("Voucher non trovato", 404);
   if (!voucher.oam) return error("Compila prima i dati della scheda cliente", 409);
 
@@ -25,4 +25,4 @@ export async function GET(req: NextRequest) {
       "Cache-Control": "no-store",
     },
   });
-}
+});
