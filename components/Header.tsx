@@ -8,7 +8,7 @@ const NAV = [
   { href: "#chi-siamo", label: "Chi siamo" },
   { href: "#calcolatore", label: "Calcola" },
   { href: "#recensioni", label: "Recensioni" },
-  { href: "#visita", label: "Dove siamo" },
+  { href: "#visita", label: "Vieni a trovarci" },
 ];
 
 export default function Header() {

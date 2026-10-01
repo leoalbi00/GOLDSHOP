@@ -1,5 +1,5 @@
 "use client";
-import { Navigation, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
 import DistanceCalculator from "@/components/DistanceCalculator";
@@ -22,13 +22,21 @@ const glass = "bg-[#fffdf7]/85 backdrop-blur-md";
 function LiveStatus() {
   const s = useStoreStatus();
   return (
-    <div className="flex items-center gap-3" aria-live="polite">
-      <span className="relative flex size-3">
-        {s?.open && <span className="absolute inset-0 animate-ping rounded-full bg-guarantee/50 motion-reduce:hidden" />}
-        <span className={cn("relative size-3 rounded-full", !s ? "bg-hairline" : s.open ? "bg-guarantee" : "bg-rose-700")} />
-      </span>
-      <span className={cn("text-sm font-semibold uppercase tracking-[0.2em]", s?.open ? "text-guarantee" : "text-rose-800")}>
-        {!s ? "Orari" : s.open ? `Aperto ora · fino alle ${s.closesAt}` : `Chiuso · ${reopensLabel(s).toLowerCase()}`}
+    <div aria-live="polite">
+      <span className={cn("text-sm font-semibold", s?.open ? "text-guarantee" : "text-rose-800")}>
+        {!s ? (
+          "Orari di apertura"
+        ) : s.open ? (
+          <>
+            🟢 <span className="uppercase tracking-[0.16em]">Aperto ora</span> — {address.street}, Bergamo (vicino alla Stazione)
+            <span className="block font-normal text-muted-foreground">Fino alle {s.closesAt}</span>
+          </>
+        ) : (
+          <>
+            🔴 <span className="uppercase tracking-[0.16em]">Chiuso</span> — {reopensLabel(s)}
+            <span className="block font-normal text-muted-foreground">Intanto puoi bloccare il prezzo online</span>
+          </>
+        )}
       </span>
     </div>
   );
@@ -37,7 +45,7 @@ function LiveStatus() {
 export default function LuxuryLocation() {
   return (
     <div className="grid gap-6 lg:grid-cols-12">
-      <div className={cn(goldFrame, "lg:col-span-5")}>
+      <div className="border border-amber-500/20 shadow-[0_24px_48px_-32px_rgba(146,64,14,0.35)] lg:col-span-5">
         <div className={cn(glass, "flex h-full flex-col gap-8 p-7 sm:p-10")}>
           <LiveStatus />
 
@@ -55,7 +63,7 @@ export default function LuxuryLocation() {
               rel="noopener noreferrer"
               className="flex h-14 items-center justify-center gap-2 bg-foreground text-sm font-semibold tracking-wide text-[#f5e6b8] ring-1 ring-[#b8925a]/60 transition-colors hover:bg-[#1f2937]"
             >
-              <Navigation className="size-4" /> Google Maps
+              <span aria-hidden>🗺️</span> Apri in Google Maps
             </a>
             <a
               href={WAZE_NAV}
@@ -63,7 +71,7 @@ export default function LuxuryLocation() {
               rel="noopener noreferrer"
               className="flex h-14 items-center justify-center gap-2 bg-foreground text-sm font-semibold tracking-wide text-[#f5e6b8] ring-1 ring-[#b8925a]/60 transition-colors hover:bg-[#1f2937]"
             >
-              <Navigation className="size-4" /> Waze
+              <span aria-hidden>🚘</span> Avvia Waze
             </a>
             <a
               href={`tel:${contacts.phoneIntl}`}
@@ -78,7 +86,7 @@ export default function LuxuryLocation() {
           <dl className="divide-y divide-[#e2c58f]/60 border-y border-[#e2c58f]/60">
             {hours.map((h) => (
               <div key={h.days} className="flex justify-between gap-4 py-3">
-                <dt className="font-serif text-lg">{h.days}</dt>
+                <dt className="font-medium">{h.days}</dt>
                 <dd className="text-right text-sm tabular-nums text-muted-foreground">{h.hours}</dd>
               </div>
             ))}

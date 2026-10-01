@@ -61,8 +61,8 @@
   "trust": {
     "googleRating": 4.9,
     "googleRatingMax": 5.0,
-    "reviewsCount": 120,
-    "reviewsLabel": "oltre 120 recensioni positive",
+    "reviewsCount": 180,
+    "reviewsLabel": "oltre 180 valutazioni",
     "oamRegistered": true,
     "legalNotes": [
       "Iscritto al Registro Compro Oro OAM",
@@ -98,7 +98,8 @@
     "cashLimitEur": 500
   },
   "about": {
-    "_note": "Scrivi qui la storia vera del negozio (anno di apertura, chi siete). Se vuoto, la sezione 'Chi siamo' usa solo i fatti già presenti nel sito.",
+    "_note": "Dati dichiarati dal titolare. 'yearsInBergamo' compare come '+N Anni a Bergamo': tenerlo aggiornato e veritiero. 'story' sostituisce il testo predefinito di 'Chi siamo'.",
+    "yearsInBergamo": 10,
     "story": ""
   }
 }

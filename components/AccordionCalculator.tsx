@@ -1,66 +1,82 @@
 "use client";
-import { Calculator } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import SimpleGoldCalculator from "@/components/SimpleGoldCalculator";
 
-const { pricing, payment, services, hours, compliance } = siteData;
+const { pricing, payment, compliance, address } = siteData;
 
-const FAQ = [
-  {
-    q: "Quali documenti devo portare?",
-    a: "Un documento d'identità valido e il codice fiscale. Per legge (D.Lgs. 92/2017) ogni acquisto di oro usato richiede l'identificazione del cliente e la compilazione di una scheda.",
-  },
-  {
-    q: "Come calcolate il prezzo?",
-    a: "Partiamo dalla quotazione di Borsa del giorno, la moltiplichiamo per il titolo (ad esempio 750 per l'oro 18K) e per il peso netto, e togliamo il margine del negozio, che vedi già indicato nel calcolatore. In negozio pesiamo davanti a te e verifichiamo la caratura.",
-  },
-  {
-    q: "Come vengo pagato?",
-    a: `${payment}. Per importi da ${compliance.cashLimitEur} € in su la legge consente solo pagamenti tracciabili: bonifico o assegno.`,
-  },
-  {
-    q: `Cosa significa bloccare il prezzo per ${pricing.voucherValidityHours} ore?`,
-    a: `Ricevi un voucher con codice e QR: per ${pricing.voucherValidityHours} ore il prezzo al grammo resta quello del momento, anche se la quotazione scende. Il valore finale si conferma in negozio dopo la pesata e la verifica del titolo.`,
-  },
-  {
-    q: "Cosa acquistate?",
-    a: services.join(" · "),
-  },
-  {
-    q: "Serve un appuntamento?",
-    a: `No, negli orari di apertura (${hours.map((h) => `${h.days}: ${h.hours}`).join("; ")}). Per eredità, orologi o lotti importanti consigliamo un appuntamento riservato.`,
-  },
+function Title({ emoji, title, sub }: { emoji: string; title: string; sub?: string }) {
+  return (
+    <span className="flex items-center gap-4">
+      <span className="flex size-12 shrink-0 items-center justify-center border border-[#e2c58f] bg-gold-soft text-2xl" aria-hidden>
+        {emoji}
+      </span>
+      <span>
+        <span className="block font-serif text-2xl font-medium leading-tight md:text-3xl">{title}</span>
+        {sub && <span className="mt-1 block text-sm text-muted-foreground">{sub}</span>}
+      </span>
+    </span>
+  );
+}
+
+const STEPS_OAM = [
+  ["Identificazione", "Ti chiediamo un documento d'identità valido e il codice fiscale: è un obbligo di legge (D.Lgs. 92/2017) per ogni acquisto di oro usato."],
+  ["Pesata a vista", "La bilancia omologata è rivolta verso di te: leggi il peso insieme a noi, prima di qualsiasi calcolo."],
+  ["Verifica del titolo", "Controlliamo punzoni e caratura (es. 750 per l'oro 18K) davanti a te, e ti spieghiamo quanto oro puro contiene l'oggetto."],
+  ["Scheda e pagamento", `Compiliamo la scheda cliente prevista dal Registro OAM e paghiamo subito: ${payment.toLowerCase()}. Da ${compliance.cashLimitEur} € in su solo bonifico o assegno.`],
 ];
 
-/** Calcolatore e domande frequenti in un'unica sezione compatta; il calcolatore parte aperto. */
+const STEPS_LOCK = [
+  ["Calcola", "Inserisci i grammi e scegli la caratura nel calcolatore qui sopra: vedi subito la stima netta."],
+  ["Blocca", `Premi "Blocca il Prezzo per 24h": ricevi un certificato con codice e QR, valido ${pricing.voucherValidityHours} ore.`],
+  ["Invia su WhatsApp", "Con un tocco mandi il voucher al negozio: il prezzo al grammo resta quello del momento, anche se la quotazione scende."],
+  ["Vieni in sede", `Entro ${pricing.voucherValidityHours} ore passi in ${address.street}: pesata a vista e pagamento. Il valore finale si conferma dopo la verifica di peso e titolo.`],
+];
+
+function Steps({ steps }: { steps: string[][] }) {
+  return (
+    <ol className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 lg:grid-cols-4">
+      {steps.map(([title, body], i) => (
+        <li key={title} className="bg-paper p-5">
+          <div className="font-serif text-3xl italic text-gold">{i + 1}</div>
+          <div className="mt-2 font-semibold">{title}</div>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** Tre tendine: il calcolatore (aperto), la pesata a vista con la trasparenza OAM, il blocco del prezzo. */
 export default function AccordionCalculator() {
   return (
     <Accordion type="multiple" defaultValue={["calcolatore"]} className="border-t border-hairline">
       <AccordionItem value="calcolatore">
         <AccordionTrigger>
-          <span className="flex items-center gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center bg-gold text-white">
-              <Calculator className="size-6" strokeWidth={1.5} />
-            </span>
-            <span>
-              <span className="block font-serif text-2xl font-medium md:text-3xl">Sai quanti grammi hai?</span>
-              <span className="block text-sm text-muted-foreground">Calcola in tempo reale e blocca il prezzo per {pricing.voucherValidityHours} ore</span>
-            </span>
-          </span>
+          <Title emoji="🧮" title="Sai quanti grammi hai?" sub="Calcola in tempo reale il valore del tuo oro" />
         </AccordionTrigger>
         <AccordionContent>
           <SimpleGoldCalculator />
         </AccordionContent>
       </AccordionItem>
 
-      <div className="pt-10 text-xs font-semibold uppercase tracking-[0.24em] text-gold">Domande frequenti</div>
-      {FAQ.map((f, i) => (
-        <AccordionItem key={f.q} value={`faq-${i}`}>
-          <AccordionTrigger className="font-serif text-xl font-medium">{f.q}</AccordionTrigger>
-          <AccordionContent className="max-w-3xl leading-relaxed text-muted-foreground">{f.a}</AccordionContent>
-        </AccordionItem>
-      ))}
+      <AccordionItem value="oam">
+        <AccordionTrigger>
+          <Title emoji="⚖️" title="Come funziona la pesata a vista e la trasparenza OAM?" />
+        </AccordionTrigger>
+        <AccordionContent>
+          <Steps steps={STEPS_OAM} />
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="blocco">
+        <AccordionTrigger>
+          <Title emoji="🔒" title={`Blocco quotazione per ${pricing.voucherValidityHours} ore`} sub="Come bloccare il prezzo di oggi prima di venire in negozio" />
+        </AccordionTrigger>
+        <AccordionContent>
+          <Steps steps={STEPS_LOCK} />
+        </AccordionContent>
+      </AccordionItem>
     </Accordion>
   );
 }

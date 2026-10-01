@@ -40,21 +40,26 @@ export default function AnimatedReviews() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <a href={links.googleReviews} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4">
-          <span className="font-serif text-6xl font-medium leading-none tabular-nums">{trust.googleRating.toFixed(1).replace(".", ",")}</span>
-          <span>
-            <Stars n={Math.round(trust.googleRating)} />
-            <span className="mt-1 block text-sm text-muted-foreground group-hover:text-foreground">
-              su {trust.googleRatingMax} · Google · {trust.reviewsLabel} →
-            </span>
-          </span>
-        </a>
-      </div>
+      <a
+        href={links.googleReviews}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex flex-wrap items-center gap-x-4 gap-y-2 border border-[#e2c58f] bg-paper px-6 py-4 transition-colors hover:bg-gold-soft"
+      >
+        <span className="text-2xl" aria-hidden>⭐</span>
+        <span className="font-serif text-4xl font-medium leading-none tabular-nums">
+          {trust.googleRating.toFixed(1).replace(".", ",")}
+          <span className="text-2xl text-muted-foreground">/{trust.googleRatingMax}</span>
+        </span>
+        <span className="text-sm">
+          <Stars n={Math.round(trust.googleRating)} />
+          <span className="mt-1 block text-muted-foreground">Google · {trust.reviewsLabel} →</span>
+        </span>
+      </a>
 
       <div
         className="marquee relative mt-10 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
-        style={{ ["--marquee-duration" as string]: `${items.length * (hasReviews ? 12 : 6)}s` }}
+        style={{ ["--marquee-duration" as string]: `${items.length * (hasReviews ? 7 : 4)}s` }}
         role="region"
         aria-label={hasReviews ? "Recensioni dei clienti" : "Perché sceglierci"}
       >

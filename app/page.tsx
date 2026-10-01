@@ -3,9 +3,8 @@ import LiveTicker from "@/components/LiveTicker";
 import Header from "@/components/Header";
 import HeroVideo from "@/components/HeroVideo";
 import ScrollReveal from "@/components/ScrollReveal";
-import TrustAndReviews from "@/components/TrustAndReviews";
 import PromoBanner from "@/components/PromoBanner";
-import AboutSection from "@/components/AboutSection";
+import AboutUs from "@/components/AboutUs";
 import AccordionCalculator from "@/components/AccordionCalculator";
 import ShopGallery from "@/components/ShopGallery";
 import AnimatedReviews from "@/components/AnimatedReviews";
@@ -37,23 +36,9 @@ export default function Home() {
 
         <section id="chi-siamo" aria-labelledby="about-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <ScrollReveal parallax={0}>
-              <SectionTitle id="about-title" eyebrow="Chi siamo" title="123 Gold, il compro oro di Via Angelo Maj." />
-            </ScrollReveal>
-            <ScrollReveal delay={0.1} parallax={12}>
-              <AboutSection />
-            </ScrollReveal>
-          </div>
-        </section>
-
-        <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <ScrollReveal parallax={0}>
-              <SectionTitle id="calc-title" eyebrow="Calcola · Domande" title="Quanto vale il tuo oro, adesso." />
-            </ScrollReveal>
-            <PromoBanner />
-            <ScrollReveal delay={0.1} parallax={0}>
-              <AccordionCalculator />
+            <div className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-gold">Chi siamo · La nostra storia</div>
+            <ScrollReveal parallax={12}>
+              <AboutUs />
             </ScrollReveal>
           </div>
         </section>
@@ -69,13 +54,14 @@ export default function Home() {
           </section>
         )}
 
-        <section id="passaggi" aria-labelledby="steps-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+        <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="steps-title" eyebrow="Come funziona" title="Tre passaggi, tutto davanti a te." />
+              <SectionTitle id="calc-title" eyebrow="Calcola · Domande" title="Quanto vale il tuo oro, adesso." />
             </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <TrustAndReviews />
+            <PromoBanner />
+            <ScrollReveal delay={0.1} parallax={0}>
+              <AccordionCalculator />
             </ScrollReveal>
           </div>
         </section>
@@ -92,7 +78,7 @@ export default function Home() {
         <section id="visita" aria-labelledby="visit-title" className="scroll-mt-24 border-b border-border bg-[radial-gradient(ellipse_at_top,#f6efe4,transparent_70%)] py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="visit-title" eyebrow="Vieni a trovarci" title="A due passi dalla Stazione." />
+              <SectionTitle id="visit-title" eyebrow="Vieni a trovarci" title="Vieni a trovarci in Sede" />
             </ScrollReveal>
             <ScrollReveal delay={0.1} parallax={16}>
               <LuxuryLocation />
