@@ -113,7 +113,7 @@ export default function OAMFormDialog({ voucher, onOpenChange }: { voucher: Vouc
 
   return (
     <Dialog open onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl rounded-sm">
+      <DialogContent className="block rounded-sm sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Scheda cliente OAM</DialogTitle>
           <DialogDescription>

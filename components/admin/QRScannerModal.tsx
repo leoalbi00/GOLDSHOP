@@ -126,7 +126,7 @@ export default function QRScannerModal({ open, onOpenChange, initialCode, onComp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md rounded-sm">
+      <DialogContent className="block rounded-sm sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ScanLine className="size-5 text-gold" /> Valida voucher

@@ -93,7 +93,7 @@ export default function VIPBookingModal({ children }: { children: React.ReactNod
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-xl rounded-sm p-0">
+      <DialogContent className="gap-0 rounded-sm p-0 sm:max-w-xl">
         <div className="border-b border-border px-6 py-5 md:px-8">
           <DialogHeader>
             <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-gold">

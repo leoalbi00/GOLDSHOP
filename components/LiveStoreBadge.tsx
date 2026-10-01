@@ -2,10 +2,10 @@
 import { ChevronDown } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/cn";
 
-const { hours, pricing } = siteData;
+const { address, hours, pricing } = siteData;
 
 /** Stato del negozio in tempo reale nell'header, con orari completi nel popover. */
 export default function LiveStoreBadge({ className }: { className?: string }) {
@@ -14,26 +14,23 @@ export default function LiveStoreBadge({ className }: { className?: string }) {
 
   return (
     <Popover>
-      <PopoverTrigger
-        className={cn(
-          "group inline-flex h-9 items-center gap-2.5 whitespace-nowrap rounded-full border px-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/30",
-          !s ? "border-hairline text-transparent" : open ? "border-guarantee/30 bg-guarantee-soft text-guarantee" : "border-rose-800/20 bg-rose-50 text-rose-800",
-          className,
-        )}
-        aria-label={!s ? "Stato del negozio" : open ? "Negozio aperto ora: vedi orari" : "Negozio chiuso ora: vedi orari"}
-      >
-        <span className="relative flex size-2">
-          {open && <span className="absolute inset-0 animate-ping rounded-full bg-guarantee/60 motion-reduce:hidden" />}
-          <span className={cn("relative size-2 rounded-full", !s ? "bg-hairline" : open ? "bg-guarantee" : "bg-rose-700")} />
-        </span>
-        <span>{!s ? "…" : open ? "Aperto ora" : "Chiuso ora"}</span>
-        {s && (
-          <span className="hidden normal-case tracking-normal 2xl:inline">
-            <span className="opacity-40">—</span>{" "}
-            {open ? "Via Maj 39/B · Bilancia omologata pronta" : `${reopensLabel(s)} · Blocca il prezzo online ${pricing.voucherValidityHours}h`}
-          </span>
-        )}
-        <ChevronDown className="size-3 opacity-60 transition-transform group-data-[state=open]:rotate-180" />
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className={`group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/30 ${className ?? ""}`}
+          aria-label={!s ? "Stato del negozio" : open ? "Negozio aperto ora: vedi orari" : "Negozio chiuso ora: vedi orari"}
+        >
+          <StatusBadge status={!s ? "loading" : open ? "online" : "offline"} className="h-9 text-[11px] font-semibold uppercase tracking-[0.14em]">
+            {!s ? "…" : open ? "Aperto ora" : "Chiuso ora"}
+            {s && (
+              <span className="hidden normal-case tracking-normal 2xl:inline">
+                <span className="opacity-40">—</span>{" "}
+                {open ? `${address.street}, ${address.city}` : `${reopensLabel(s)} · Blocca il prezzo online ${pricing.voucherValidityHours}h`}
+              </span>
+            )}
+            <ChevronDown className="size-3 opacity-60 transition-transform group-data-[state=open]:rotate-180" />
+          </StatusBadge>
+        </button>
       </PopoverTrigger>
 
       <PopoverContent>

@@ -13,6 +13,7 @@ const buttonVariants = cva(
         guarantee: "bg-guarantee text-white shadow-sm hover:bg-emerald-700",
         outline: "border border-border bg-white text-foreground shadow-sm hover:bg-muted",
         ghost: "text-foreground hover:bg-muted",
+        link: "text-gold underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4",

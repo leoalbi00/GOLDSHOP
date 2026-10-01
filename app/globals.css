@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @theme {
   --font-serif: var(--font-cormorant), "Didot", Georgia, serif;
@@ -18,6 +19,21 @@
   --color-gold-soft: #f6efe4;
   --color-guarantee: #047857;
   --color-guarantee-soft: #ecf5f0;
+
+  /* Token shadcn/ui mappati sulla palette del negozio */
+  --color-primary: #111827;
+  --color-primary-foreground: #faf9f6;
+  --color-secondary: #f3f1ec;
+  --color-secondary-foreground: #111827;
+  --color-accent: #f3f1ec;
+  --color-accent-foreground: #111827;
+  --color-destructive: #9f1239;
+  --color-card: #ffffff;
+  --color-card-foreground: #111827;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #111827;
+  --color-input: #d9d4c8;
+  --color-ring: #92400e;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }

@@ -3,6 +3,7 @@ import siteData from "@/data/site-data.json";
 import RevealTitle from "@/components/RevealTitle";
 import OpenStatus from "@/components/OpenStatus";
 import VIPSection from "@/components/VIPSection";
+import TrustAndReviews from "@/components/TrustAndReviews";
 
 const { address, hours, contacts } = siteData;
 const fullAddress = `${address.street}, ${address.cap} ${address.city}`;
@@ -13,24 +14,6 @@ const NAVIGATORS = [
   { label: "Google Maps", href: `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}` },
   { label: "Apple Mappe", href: `https://maps.apple.com/?daddr=${mapsQuery}&dirflg=d` },
   { label: "Waze", href: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes` },
-];
-
-const STEPS = [
-  {
-    n: "I",
-    title: "Pesatura a vista",
-    body: "Il peso viene rilevato davanti a te su bilancia di precisione omologata. Leggi il display insieme a noi, grammo per grammo.",
-  },
-  {
-    n: "II",
-    title: "Verifica del titolo",
-    body: "Controlliamo punzoni e caratura in tua presenza e ti spieghiamo come si arriva al valore: quotazione, titolo, peso.",
-  },
-  {
-    n: "III",
-    title: "Pagamento immediato",
-    body: `${siteData.payment}, subito dopo la valutazione. Se hai bloccato la quotazione online, vale il prezzo del voucher.`,
-  },
 ];
 
 const eyebrow = "text-[11px] font-medium uppercase tracking-[0.24em]";
@@ -49,15 +32,9 @@ export default function VisitSection() {
             />
           </div>
 
-          <ol className="mt-16 grid grid-cols-1 border-t border-foreground md:grid-cols-3">
-            {STEPS.map((s) => (
-              <li key={s.n} className="border-b border-border py-8 md:border-b-0 md:border-l md:px-8 md:first:border-l-0 md:first:pl-0">
-                <div className="font-serif text-2xl italic text-gold">{s.n}</div>
-                <h3 className="mt-6 text-lg font-semibold tracking-tight">{s.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-              </li>
-            ))}
-          </ol>
+          <div className="mt-16">
+            <TrustAndReviews />
+          </div>
         </div>
       </section>
 

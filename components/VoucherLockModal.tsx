@@ -5,13 +5,15 @@ import { QRCodeSVG } from "qrcode.react";
 import dayjs from "dayjs";
 import "dayjs/locale/it";
 import { toast } from "sonner";
-import { Check, MessageCircle, Send } from "lucide-react";
+import { Check, MessageCircle, Send, ShieldCheck } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { formatEur } from "@/lib/pricing";
 import type { Voucher } from "@/lib/vouchers";
 import { voucherToCustomerLink, voucherToShopLink } from "@/lib/whatsapp-engine";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 interface Props {
   voucher: Voucher | null;
@@ -92,36 +94,40 @@ export default function VoucherLockModal({ voucher, onClose }: Props) {
   return (
     <Dialog open={!!voucher} onOpenChange={(open) => !open && onClose()}>
       {voucher && (
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Quotazione bloccata</DialogTitle>
+        <DialogContent className="gap-0 rounded-sm sm:max-w-md">
+          <DialogHeader className="text-left">
+            <Badge variant="outline" className="border-guarantee/30 bg-guarantee-soft text-guarantee">
+              <ShieldCheck /> Prezzo bloccato {siteData.pricing.voucherValidityHours}h
+            </Badge>
+            <DialogTitle className="font-serif text-2xl font-medium">Quotazione bloccata</DialogTitle>
             <DialogDescription>
-              Mostra questo codice in negozio, {siteData.address.street}, entro il{" "}
+              Mostra questo QR in negozio, {siteData.address.street}, entro il{" "}
               {dayjs(voucher.expiresAt).locale("it").format("D MMMM [alle] HH:mm")}.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-5 flex flex-col items-center border border-border bg-muted p-5">
-            <div className="bg-white p-3 shadow-sm">
-              <QRCodeSVG value={voucher.code} size={168} level="M" fgColor="#111827" />
-            </div>
-            <div className="mt-4 font-mono text-base font-semibold tracking-widest">{voucher.code}</div>
-          </div>
-
-          <dl className="mt-5 grid grid-cols-3 divide-x divide-border border border-border text-center text-sm">
-            <div className="p-3">
-              <dt className="text-xs text-muted-foreground">Caratura</dt>
-              <dd className="font-medium">{voucher.metal === "silver" ? voucher.purityLabel : voucher.purityId}</dd>
-            </div>
-            <div className="p-3">
-              <dt className="text-xs text-muted-foreground">Peso</dt>
-              <dd className="font-medium tabular-nums">{gramsFmt.format(voucher.grams)} g</dd>
-            </div>
-            <div className="p-3">
-              <dt className="text-xs text-muted-foreground">Valore bloccato</dt>
-              <dd className="font-semibold tabular-nums text-guarantee">{formatEur(voucher.amountCents / 100)}</dd>
-            </div>
-          </dl>
+          <Card className="mt-5 gap-0 rounded-sm border-hairline py-0 shadow-none">
+            <CardContent className="flex flex-col items-center bg-muted px-5 py-6">
+              <div className="bg-white p-3 shadow-sm">
+                <QRCodeSVG value={voucher.code} size={176} level="M" fgColor="#111827" title={`Voucher ${voucher.code}`} />
+              </div>
+              <div className="mt-4 font-mono text-base font-semibold tracking-widest">{voucher.code}</div>
+            </CardContent>
+            <CardFooter className="grid grid-cols-3 divide-x divide-border border-t border-border px-0 text-center text-sm [.border-t]:pt-0">
+              <div className="p-3">
+                <div className="text-xs text-muted-foreground">Caratura</div>
+                <div className="font-medium">{voucher.metal === "silver" ? voucher.purityLabel : voucher.purityId}</div>
+              </div>
+              <div className="p-3">
+                <div className="text-xs text-muted-foreground">Peso</div>
+                <div className="font-medium tabular-nums">{gramsFmt.format(voucher.grams)} g</div>
+              </div>
+              <div className="p-3">
+                <div className="text-xs text-muted-foreground">Valore</div>
+                <div className="font-semibold tabular-nums text-guarantee">{formatEur(voucher.amountCents / 100)}</div>
+              </div>
+            </CardFooter>
+          </Card>
 
           <SendToMyself voucher={voucher} />
 

@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { toSnapshot } from "dinero.js";
-import gsap from "gsap";
 import confetti from "canvas-confetti";
 import axios from "axios";
 import { toast } from "sonner";
@@ -16,6 +15,7 @@ import { useMargins } from "@/lib/useMargins";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import VoucherLockModal from "@/components/VoucherLockModal";
 import PurityBreakdown from "@/components/PurityBreakdown";
+import { NumberTicker } from "@/components/ui/number-ticker";
 import { cn } from "@/lib/cn";
 
 const TAB_IDS = ["24K", "18K", "14K", "AG", "AG925"];
@@ -68,29 +68,6 @@ export default function BespokeCalculator() {
     [purity, grams, gold24k, silver, spread],
   );
   const payoutCents = payout ? toSnapshot(payout).amount : 0;
-
-  // Il valore stimato scorre verso il nuovo importo invece di saltare.
-  const amountRef = useRef<HTMLSpanElement>(null);
-  const tweened = useRef({ cents: payoutCents });
-  useEffect(() => {
-    const el = amountRef.current;
-    if (!el) return;
-    const render = () => (el.textContent = formatEur(Math.round(tweened.current.cents) / 100));
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      tweened.current.cents = payoutCents;
-      render();
-      return;
-    }
-    const tween = gsap.to(tweened.current, {
-      cents: payoutCents,
-      duration: 0.6,
-      ease: "expo.out",
-      onUpdate: render,
-    });
-    return () => {
-      tween.kill();
-    };
-  }, [payoutCents]);
 
   const step = (delta: number) => {
     const next = Math.min(MAX_GRAMS, Math.max(0.1, (grams ?? 0) + delta));
@@ -260,9 +237,14 @@ export default function BespokeCalculator() {
               </Tooltip>
             </div>
             <div className="mt-3 text-5xl font-medium leading-none tracking-[-0.03em] tabular-nums text-foreground md:text-6xl">
-              <span ref={amountRef} aria-hidden>
-                {formatEur(payoutCents / 100)}
-              </span>
+              <NumberTicker
+                aria-hidden
+                value={payoutCents / 100}
+                decimalPlaces={2}
+                locale="it-IT"
+                formatOptions={{ style: "currency", currency: "EUR" }}
+                className="tracking-[-0.03em] text-foreground"
+              />
               <span className="sr-only" aria-live="polite">
                 {payout ? formatEur(payout) : "Nessuna stima"}
               </span>
