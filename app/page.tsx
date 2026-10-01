@@ -1,11 +1,24 @@
 import siteData from "@/data/site-data.json";
 import LiveTicker from "@/components/LiveTicker";
 import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import MarketSection from "@/components/MarketSection";
-import VisitSection from "@/components/VisitSection";
+import HeroVideo from "@/components/HeroVideo";
+import ScrollReveal from "@/components/ScrollReveal";
+import SimpleGoldCalculator from "@/components/SimpleGoldCalculator";
+import TrustAndReviews from "@/components/TrustAndReviews";
+import DirectLocation from "@/components/DirectLocation";
 
 const { address, contacts, trust } = siteData;
+
+function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; id: string }) {
+  return (
+    <div className="mb-10 max-w-3xl">
+      <div className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">{eyebrow}</div>
+      <h2 id={id} className="mt-4 font-serif text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl">
+        {title}
+      </h2>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -13,9 +26,40 @@ export default function Home() {
       <LiveTicker />
       <Header />
       <main>
-        <HeroSection />
-        <MarketSection />
-        <VisitSection />
+        <HeroVideo />
+
+        <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              <SectionTitle id="calc-title" eyebrow="1 · Calcola" title="Quanto vale il tuo oro, adesso." />
+            </ScrollReveal>
+            <ScrollReveal delay={0.1} parallax={20}>
+              <SimpleGoldCalculator />
+            </ScrollReveal>
+          </div>
+        </section>
+
+        <section id="passaggi" aria-labelledby="steps-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              <SectionTitle id="steps-title" eyebrow="2 · Come funziona" title="Tre passaggi, tutto davanti a te." />
+            </ScrollReveal>
+            <ScrollReveal delay={0.1}>
+              <TrustAndReviews />
+            </ScrollReveal>
+          </div>
+        </section>
+
+        <section id="visita" aria-labelledby="visit-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              <SectionTitle id="visit-title" eyebrow="3 · Vieni in negozio" title="A due passi dalla Stazione." />
+            </ScrollReveal>
+            <ScrollReveal delay={0.1} parallax={24}>
+              <DirectLocation />
+            </ScrollReveal>
+          </div>
+        </section>
       </main>
       <footer className="bg-foreground text-background/70">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 text-sm sm:px-6 md:grid-cols-12">

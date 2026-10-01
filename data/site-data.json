@@ -8,10 +8,11 @@
     "province": "BG",
     "country": "IT",
     "coordinates": {
-      "lat": 45.6925,
-      "lng": 9.6761
+      "lat": 45.6961,
+      "lng": 9.6829
     },
-    "landmark": "A pochi minuti a piedi dalla Stazione FS di Bergamo"
+    "landmark": "A pochi minuti a piedi dalla Stazione FS di Bergamo",
+    "_coordinatesSource": "OpenStreetMap, nodo civico 39 Via Angelo Maj (verificato 2026-10-01)"
   },
   "contacts": {
     "phone": "035 234288",

@@ -79,3 +79,21 @@ export function reviewRequestLink(v: Voucher): string | null {
     `${REVIEW_LINK}\nGrazie e a presto!`;
   return waLink(phone, text);
 }
+
+/** Richiesta del cliente al negozio dal calcolatore semplice; il codice c'è se il voucher è stato registrato. */
+export function lockRequestToShopLink(r: {
+  purityLabel: string;
+  grams: number;
+  amountCents: number;
+  code?: string;
+  expiresAt?: string;
+}): string {
+  const lines = [
+    `Buongiorno, vorrei bloccare il prezzo del mio oro.`,
+    `${r.purityLabel} · ${gramsFmt.format(r.grams)} g · Stima netta: ${formatEur(r.amountCents / 100)}`,
+    r.code ? `Codice voucher: ${r.code}` : null,
+    r.expiresAt ? `Valido fino al: ${expiry({ expiresAt: r.expiresAt })}` : null,
+    `Passo in negozio in ${address.street} per la pesatura a vista.`,
+  ];
+  return waLink(contacts.whatsapp, lines.filter(Boolean).join("\n"));
+}
