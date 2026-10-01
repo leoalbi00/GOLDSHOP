@@ -11,7 +11,7 @@ import { useMargins } from "@/lib/useMargins";
 /** Volantino A5 stampabile: in stampa resta solo il foglio, senza l'interfaccia dell'area riservata. */
 export default function Flyer() {
   const { settings } = useMargins();
-  const { seasonal, heritage } = settings.promotions ?? DEFAULT_MARGINS.promotions;
+  const { seasonal, heritage, bulk } = { ...DEFAULT_MARGINS.promotions, ...settings.promotions };
   const [url, setUrl] = useState(process.env.NEXT_PUBLIC_SITE_URL ?? "");
   useEffect(() => {
     if (!url) setUrl(window.location.origin);
@@ -44,12 +44,18 @@ export default function Flyer() {
         <h2 className="mt-8 font-serif text-[2.6rem] font-medium leading-[1.02]">{FLYER.headline}</h2>
         <p className="mt-3 text-sm text-[#6b6760]">{FLYER.subhead}</p>
 
-        {(seasonal.active || heritage.active) && (
+        {(seasonal.active || heritage.active || bulk.active) && (
           <div className="mt-6 space-y-2">
             {seasonal.active && (
               <div className="bg-[#92400e] px-4 py-3 text-white">
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em]">Promo {SEASON_LABEL[seasonal.season]}</div>
                 <div className="text-lg font-bold">+{formatEur(seasonal.bonusPerGram)} al grammo sull&apos;oro {seasonal.purityIds.join(", ")}</div>
+              </div>
+            )}
+            {bulk.active && (
+              <div className="bg-[#047857] px-4 py-3 text-white">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em]">Bonus lotti</div>
+                <div className="text-lg font-bold">+{formatEur(bulk.bonusPerGram)} al grammo oltre {bulk.minGrams} g d&apos;oro</div>
               </div>
             )}
             {heritage.active && (

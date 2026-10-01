@@ -25,6 +25,7 @@ export async function PUT(req: NextRequest) {
       promotions: {
         seasonal: { ...base.seasonal, ...promotions.seasonal },
         heritage: { ...base.heritage, ...promotions.heritage },
+        bulk: { ...base.bulk, ...promotions.bulk },
       },
     };
     return { data, result: data };

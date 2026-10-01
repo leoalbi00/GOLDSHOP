@@ -10,6 +10,8 @@ export interface Promotions {
   seasonal: { active: boolean; season: "summer" | "winter"; bonusPerGram: number; purityIds: string[] };
   /** "Heritage VIP": bonus €/g sui lotti d'oro oltre la soglia, con valutazione riservata. */
   heritage: { active: boolean; minGrams: number; bonusPerGram: number };
+  /** "Bonus lotti": bonus €/g sui lotti d'oro oltre la soglia (es. +1,00 €/g oltre 50 g). */
+  bulk: { active: boolean; minGrams: number; bonusPerGram: number };
 }
 
 export interface MarginSettings {
@@ -39,6 +41,10 @@ export const marginSettingsSchema = z.object({
         .object({ active: z.boolean(), minGrams: z.number().min(1).max(100000), bonusPerGram: z.number().min(0).max(20) })
         .partial()
         .optional(),
+      bulk: z
+        .object({ active: z.boolean(), minGrams: z.number().min(1).max(100000), bonusPerGram: z.number().min(0).max(20) })
+        .partial()
+        .optional(),
     })
     .optional(),
 });
@@ -50,17 +56,20 @@ export function spreadFor(settings: MarginSettings, purityId: string): number {
 }
 
 export interface AppliedPromo {
-  id: "seasonal" | "heritage";
+  id: "seasonal" | "heritage" | "bulk";
   label: string;
   bonusPerGram: number;
 }
 
 /** Promozioni attive che si applicano a questa caratura e a questo peso. */
 export function promosFor(settings: MarginSettings, purity: Purity, grams: number): AppliedPromo[] {
-  const p = settings.promotions ?? DEFAULT_MARGINS.promotions;
+  const p = { ...DEFAULT_MARGINS.promotions, ...settings.promotions };
   const out: AppliedPromo[] = [];
   if (p.seasonal.active && p.seasonal.purityIds.includes(purity.id)) {
     out.push({ id: "seasonal", label: SEASON_LABEL[p.seasonal.season], bonusPerGram: p.seasonal.bonusPerGram });
+  }
+  if (p.bulk.active && purity.metal === "gold" && grams > p.bulk.minGrams) {
+    out.push({ id: "bulk", label: "Bonus lotti", bonusPerGram: p.bulk.bonusPerGram });
   }
   if (p.heritage.active && purity.metal === "gold" && grams > p.heritage.minGrams) {
     out.push({ id: "heritage", label: "Heritage VIP", bonusPerGram: p.heritage.bonusPerGram });

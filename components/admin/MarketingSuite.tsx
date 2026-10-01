@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "sonner";
-import { Clapperboard, Copy, Crown, Loader2, Megaphone, Printer, Radio, Sun, Snowflake } from "lucide-react";
+import { Clapperboard, Copy, Crown, Loader2, Megaphone, Printer, Radio, Scale, Sun, Snowflake } from "lucide-react";
 import { PURITIES, formatEur, offerPerGram } from "@/lib/pricing";
 import { DEFAULT_MARGINS, SEASON_LABEL, spreadFor, type MarginSettings, type Promotions } from "@/lib/margins";
 import { ADS, GOOGLE_LIMITS, META_LIMITS, RADIO_SPOTS, REEL_SCRIPT } from "@/lib/marketing/spots-data";
@@ -58,15 +58,43 @@ function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: 
   );
 }
 
+/** Soglia in grammi e bonus €/g modificabili, con salvataggio esplicito. */
+function ThresholdEditor({ minGrams, bonus, onSave }: { minGrams: number; bonus: number; onSave: (v: { minGrams: number; bonusPerGram: number }) => void }) {
+  const [g, setG] = useState(String(minGrams));
+  const [b, setB] = useState(bonus.toFixed(2).replace(".", ","));
+  const gn = Number(g);
+  const bn = Number(b.replace(",", "."));
+  const valid = Number.isFinite(gn) && gn >= 1 && Number.isFinite(bn) && bn >= 0 && bn <= 20;
+  const dirty = gn !== minGrams || bn !== bonus;
+  const input = "w-20 border-b border-foreground bg-transparent py-1 text-right font-medium tabular-nums outline-none focus:border-gold";
+  return (
+    <div className="mt-4 flex flex-wrap items-end gap-4 text-sm">
+      <label className="flex items-center gap-2">
+        Oltre <input inputMode="numeric" className={input} value={g} onChange={(e) => setG(e.target.value.replace(/\D/g, ""))} aria-label="Soglia in grammi" /> g
+      </label>
+      <label className="flex items-center gap-2">
+        Bonus + <input inputMode="decimal" className={input} value={b} onChange={(e) => setB(e.target.value.replace(/[^\d.,]/g, ""))} aria-label="Bonus in euro al grammo" /> €/g
+      </label>
+      <button type="button" disabled={!valid || !dirty} onClick={() => onSave({ minGrams: gn, bonusPerGram: bn })}
+        className="h-8 bg-foreground px-3 text-xs font-semibold text-background disabled:opacity-30">
+        Salva
+      </button>
+    </div>
+  );
+}
+
 function PromotionsPanel() {
   const { gold24k, silver } = useQuotes();
   const { settings, mutate } = useMargins();
-  const promos: Promotions = settings.promotions ?? DEFAULT_MARGINS.promotions;
+  const promos: Promotions = { ...DEFAULT_MARGINS.promotions, ...settings.promotions };
   const [saving, setSaving] = useState<string | null>(null);
   const p18 = PURITIES.find((p) => p.id === "18K")!;
   const base18 = offerPerGram(p18, gold24k, silver, spreadFor(settings, "18K")).toNumber();
 
-  const save = async (key: string, patch: { seasonal?: Partial<Promotions["seasonal"]>; heritage?: Partial<Promotions["heritage"]> }) => {
+  const save = async (
+    key: string,
+    patch: { seasonal?: Partial<Promotions["seasonal"]>; heritage?: Partial<Promotions["heritage"]>; bulk?: Partial<Promotions["bulk"]> },
+  ) => {
     setSaving(key);
     try {
       const { data } = await axios.put<MarginSettings>(MARGINS_WRITE_URL, { promotions: patch });
@@ -123,6 +151,34 @@ function PromotionsPanel() {
             <Switch label="Attiva pacchetto Heritage VIP" checked={promos.heritage.active} onChange={(v) => void save("heritage", { heritage: { active: v } })} />
           )}
         </div>
+        <ThresholdEditor
+          key={`h-${promos.heritage.minGrams}-${promos.heritage.bonusPerGram}`}
+          minGrams={promos.heritage.minGrams}
+          bonus={promos.heritage.bonusPerGram}
+          onSave={(v) => void save("heritage", { heritage: v })}
+        />
+      </div>
+
+      <div className={cn("border-2 p-5 lg:col-span-2", promos.bulk.active ? "border-guarantee bg-guarantee-soft" : "border-hairline")}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 font-semibold">
+              <Scale className="size-4 text-guarantee" /> Bonus lotti
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              +{formatEur(promos.bulk.bonusPerGram)}/g su qualsiasi caratura d&apos;oro oltre {promos.bulk.minGrams} g. Si somma alle altre promozioni attive.
+            </p>
+          </div>
+          {saving === "bulk" ? <Loader2 className="size-5 animate-spin" /> : (
+            <Switch label="Attiva bonus lotti" checked={promos.bulk.active} onChange={(v) => void save("bulk", { bulk: { active: v } })} />
+          )}
+        </div>
+        <ThresholdEditor
+          key={`b-${promos.bulk.minGrams}-${promos.bulk.bonusPerGram}`}
+          minGrams={promos.bulk.minGrams}
+          bonus={promos.bulk.bonusPerGram}
+          onSave={(v) => void save("bulk", { bulk: v })}
+        />
       </div>
       <p className="text-xs text-muted-foreground lg:col-span-2">
         I bonus riducono lo spread e valgono anche per i voucher emessi mentre la promozione è attiva. Il prezzo al cliente non supera mai la quotazione di Borsa.

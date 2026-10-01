@@ -21,6 +21,11 @@
       "active": false,
       "minGrams": 100,
       "bonusPerGram": 0.5
+    },
+    "bulk": {
+      "active": false,
+      "minGrams": 50,
+      "bonusPerGram": 1.0
     }
   }
 }

@@ -97,10 +97,111 @@ function RescheduleDialog({ booking, onClose, onDone }: { booking: Booking | nul
   );
 }
 
+type SetStatus = (b: Booking, status: "confirmed" | "completed" | "cancelled", quiet?: boolean) => Promise<void>;
+
+function BookingActions({ b, setStatus, onMove, align = "end" }: { b: Booking; setStatus: SetStatus; onMove: (b: Booking) => void; align?: "end" | "start" }) {
+  const setMoving = onMove;
+  return (
+    <div className={cn("flex flex-wrap gap-1.5", align === "end" ? "justify-end" : "justify-start")}>
+      {(b.status === "requested" || b.status === "confirmed") && (
+        <a
+          href={waLink(b.phone, confirmMessage(b))}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => b.status === "requested" && void setStatus(b, "confirmed", true)}
+          className="inline-flex h-9 items-center gap-1.5 bg-[#1f9d55] px-3 text-xs font-semibold text-white"
+        >
+          <MessageCircle className="size-3.5" /> {b.status === "requested" ? "Conferma su WhatsApp" : "Ricorda su WhatsApp"}
+        </a>
+      )}
+      {b.status !== "completed" && b.status !== "cancelled" && (
+        <>
+          <button type="button" onClick={() => setMoving(b)} className="inline-flex h-9 items-center gap-1.5 border border-hairline px-3 text-xs hover:bg-muted">
+            <CalendarClock className="size-3.5" /> Riprogramma
+          </button>
+          <button type="button" onClick={() => setStatus(b, "completed")} className="inline-flex h-9 items-center gap-1.5 border border-foreground px-3 text-xs font-semibold hover:bg-foreground hover:text-background">
+            <CheckCheck className="size-3.5" /> Completato
+          </button>
+          <button type="button" onClick={() => setStatus(b, "cancelled")} className="inline-flex size-9 items-center justify-center border border-hairline hover:bg-muted" aria-label={`Annulla appuntamento di ${b.name}`}>
+            <X className="size-3.5" />
+          </button>
+        </>
+      )}
+      <a href={telLink(b.phone)} className="inline-flex size-9 items-center justify-center border border-hairline hover:bg-muted" aria-label={`Chiama ${b.name}`}>
+        <Phone className="size-3.5" />
+      </a>
+      {b.status === "completed" && <Check className="size-4 self-center text-guarantee" aria-hidden />}
+    </div>
+  );
+}
+
+/** Mese a griglia lun–dom: ogni giorno mostra gli appuntamenti; un clic apre il dettaglio con le azioni. */
+function BookingsCalendar({ bookings, setStatus, onMove }: { bookings: Booking[]; setStatus: SetStatus; onMove: (b: Booking) => void }) {
+  const [month, setMonth] = useState(() => dayjs().startOf("month"));
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const start = month.subtract((month.day() + 6) % 7, "day");
+  const days = Array.from({ length: 42 }, (_, i) => start.add(i, "day"));
+  const byDate = new Map<string, Booking[]>();
+  for (const b of bookings) byDate.set(b.date, [...(byDate.get(b.date) ?? []), b].sort((x, y) => x.time.localeCompare(y.time)));
+  const selected = bookings.find((b) => b.id === selectedId) ?? null;
+  const today = dayjs().format("YYYY-MM-DD");
+
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-between">
+        <button type="button" onClick={() => setMonth(month.subtract(1, "month"))} className="h-9 border border-hairline px-3 text-sm hover:bg-muted" aria-label="Mese precedente">‹</button>
+        <h2 className="font-serif text-2xl font-medium capitalize">{month.locale("it").format("MMMM YYYY")}</h2>
+        <button type="button" onClick={() => setMonth(month.add(1, "month"))} className="h-9 border border-hairline px-3 text-sm hover:bg-muted" aria-label="Mese successivo">›</button>
+      </div>
+      <div className="mt-3 grid grid-cols-7 border-l border-t border-hairline bg-paper text-sm" role="grid" aria-label="Calendario appuntamenti">
+        {["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map((d) => (
+          <div key={d} role="columnheader" className="border-b border-r border-hairline px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{d}</div>
+        ))}
+        {days.map((d) => {
+          const key = d.format("YYYY-MM-DD");
+          const list = byDate.get(key) ?? [];
+          return (
+            <div key={key} role="gridcell" className={cn("min-h-24 border-b border-r border-hairline p-1.5", d.month() !== month.month() && "bg-muted/50 text-muted-foreground")}>
+              <div className={cn("mb-1 inline-flex size-6 items-center justify-center text-xs tabular-nums", key === today && "rounded-full bg-foreground text-background")}>{d.date()}</div>
+              <div className="space-y-1">
+                {list.map((b) => (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => setSelectedId(b.id)}
+                    className={cn("block w-full truncate border px-1.5 py-0.5 text-left text-[11px] font-medium", STATUS[b.status].cls, selectedId === b.id && "ring-2 ring-gold")}
+                  >
+                    {b.time} {b.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {selected && (
+        <div className="mt-4 flex flex-wrap items-start justify-between gap-4 border border-hairline bg-paper p-4 text-sm">
+          <div>
+            <div className="font-semibold">
+              {dayjs(selected.date).locale("it").format("dddd D MMMM")} · {selected.time} — {selected.name}
+            </div>
+            <div className="text-muted-foreground">
+              {selected.lotType}
+              {selected.estimate && ` · ${selected.estimate}`} · {selected.phone}
+            </div>
+          </div>
+          <BookingActions b={selected} setStatus={setStatus} onMove={onMove} align="start" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BookingsList() {
   const { data, mutate } = useBookings();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("upcoming");
   const [moving, setMoving] = useState<Booking | null>(null);
+  const [view, setView] = useState<"table" | "calendar">("table");
   const today = dayjs().format("YYYY-MM-DD");
   const open = (b: Booking) => b.date >= today && (b.status === "requested" || b.status === "confirmed");
   const list = (data ?? []).filter((b) => (filter === "all" ? true : filter === "upcoming" ? open(b) : !open(b)));
@@ -122,16 +223,28 @@ export default function BookingsList() {
         Appuntamenti riservati per lotti importanti ed eredità in {siteData.address.street}.
       </p>
 
-      <div className="mt-6 flex flex-wrap gap-1.5">
-        {FILTERS.map((f) => (
-          <button key={f.id} type="button" onClick={() => setFilter(f.id)} aria-pressed={filter === f.id}
-            className={cn("h-8 border px-3 text-xs font-medium", filter === f.id ? "border-foreground bg-foreground text-background" : "border-hairline hover:bg-muted")}>
-            {f.label}
-          </button>
-        ))}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {view === "table" && FILTERS.map((f) => (
+            <button key={f.id} type="button" onClick={() => setFilter(f.id)} aria-pressed={filter === f.id}
+              className={cn("h-8 border px-3 text-xs font-medium", filter === f.id ? "border-foreground bg-foreground text-background" : "border-hairline hover:bg-muted")}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex border border-hairline" role="tablist" aria-label="Vista">
+          {(["table", "calendar"] as const).map((v) => (
+            <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => setView(v)}
+              className={cn("h-8 px-3 text-xs font-medium", view === v ? "bg-foreground text-background" : "hover:bg-muted")}>
+              {v === "table" ? "Tabella" : "Calendario"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {!list.length ? (
+      {view === "calendar" ? (
+        <BookingsCalendar bookings={(data ?? []).filter((b) => b.status !== "cancelled")} setStatus={setStatus} onMove={setMoving} />
+      ) : !list.length ? (
         <p className="mt-6 border border-dashed border-hairline p-8 text-center text-sm text-muted-foreground">Nessun appuntamento in questa vista.</p>
       ) : (
         <div className="mt-4 overflow-x-auto border border-hairline bg-paper">
@@ -170,36 +283,7 @@ export default function BookingsList() {
                     </span>
                   </td>
                   <td className="px-4 py-3 align-top">
-                    <div className="flex flex-wrap justify-end gap-1.5">
-                      {(b.status === "requested" || b.status === "confirmed") && (
-                        <a
-                          href={waLink(b.phone, confirmMessage(b))}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => b.status === "requested" && void setStatus(b, "confirmed", true)}
-                          className="inline-flex h-9 items-center gap-1.5 bg-[#1f9d55] px-3 text-xs font-semibold text-white"
-                        >
-                          <MessageCircle className="size-3.5" /> {b.status === "requested" ? "Conferma su WhatsApp" : "Ricorda su WhatsApp"}
-                        </a>
-                      )}
-                      {b.status !== "completed" && b.status !== "cancelled" && (
-                        <>
-                          <button type="button" onClick={() => setMoving(b)} className="inline-flex h-9 items-center gap-1.5 border border-hairline px-3 text-xs hover:bg-muted">
-                            <CalendarClock className="size-3.5" /> Riprogramma
-                          </button>
-                          <button type="button" onClick={() => setStatus(b, "completed")} className="inline-flex h-9 items-center gap-1.5 border border-foreground px-3 text-xs font-semibold hover:bg-foreground hover:text-background">
-                            <CheckCheck className="size-3.5" /> Completato
-                          </button>
-                          <button type="button" onClick={() => setStatus(b, "cancelled")} className="inline-flex size-9 items-center justify-center border border-hairline hover:bg-muted" aria-label={`Annulla appuntamento di ${b.name}`}>
-                            <X className="size-3.5" />
-                          </button>
-                        </>
-                      )}
-                      <a href={telLink(b.phone)} className="inline-flex size-9 items-center justify-center border border-hairline hover:bg-muted" aria-label={`Chiama ${b.name}`}>
-                        <Phone className="size-3.5" />
-                      </a>
-                      {b.status === "completed" && <Check className="size-4 self-center text-guarantee" aria-hidden />}
-                    </div>
+                    <BookingActions b={b} setStatus={setStatus} onMove={setMoving} />
                   </td>
                 </tr>
               ))}

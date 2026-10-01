@@ -40,7 +40,8 @@ function Metric({ label, value, sub, tone, small }: { label: string; value: stri
 }
 
 export default function Overview() {
-  const { gold24k, silver } = useQuotes();
+  const { gold24k, silver, quotes } = useQuotes();
+  const live = ["24K", "18K"].map((id) => quotes.find((q) => q.id === id)).filter((q) => q !== undefined);
   const { data: vouchers = [], isLoading } = useVouchers();
   const { data: bookings = [] } = useBookings();
   const [filter, setFilter] = useState<VoucherState | "all">("all");
@@ -87,7 +88,18 @@ export default function Overview() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl font-medium">Panoramica operativa</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Quotazione 24K {formatEur(gold24k)}/g · aggiornamento ogni 15 secondi</p>
+          <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-2" aria-label="Quotazioni live">
+            {live.map((q) => (
+              <div key={q.id} className="flex items-baseline gap-2">
+                <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Oro {q.id}</dt>
+                <dd className="text-xl font-semibold tabular-nums">{formatEur(q.eurPerGram)}/g</dd>
+                <dd className={cn("text-xs font-medium tabular-nums", q.changePct >= 0 ? "text-guarantee" : "text-rose-700")}>
+                  {q.changePct >= 0 ? "▲ +" : "▼ "}
+                  {q.changePct.toFixed(2).replace(".", ",")}%
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
         <button
           type="button"
