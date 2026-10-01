@@ -8,21 +8,37 @@ export interface ComplianceResult {
   ok: boolean;
   /** Importo pari o superiore alla soglia: ammessi solo mezzi tracciabili. */
   traceableRequired: boolean;
+  /** Contanti vicini alla soglia: attenzione al frazionamento artificioso dell'operazione. */
+  nearLimit: boolean;
   message: string;
 }
 
+/** Da questa quota della soglia in su i contanti generano un avviso (80%: 400 € su 500 €). */
+export const NEAR_LIMIT_RATIO = 0.8;
+
 export function checkPayment(amountCents: number, method: PaymentMethod): ComplianceResult {
   const traceableRequired = amountCents >= CASH_LIMIT_EUR * 100;
+  const nearLimit = !traceableRequired && method === "contanti" && amountCents >= CASH_LIMIT_EUR * 100 * NEAR_LIMIT_RATIO;
   if (traceableRequired && method === "contanti") {
     return {
       ok: false,
       traceableRequired,
+      nearLimit: false,
       message: `Importo pari o superiore a ${CASH_LIMIT_EUR} €: pagamento in contanti non consentito. Usare bonifico o assegno circolare non trasferibile.`,
+    };
+  }
+  if (nearLimit) {
+    return {
+      ok: true,
+      traceableRequired,
+      nearLimit,
+      message: `Contanti vicini alla soglia di ${CASH_LIMIT_EUR} €: verificare che l'operazione non sia frazionata con altre dello stesso cliente. In caso di dubbio usare bonifico.`,
     };
   }
   return {
     ok: true,
     traceableRequired,
+    nearLimit,
     message: traceableRequired
       ? `Importo pari o superiore a ${CASH_LIMIT_EUR} €: obbligo di mezzo tracciabile rispettato.`
       : `Importo sotto ${CASH_LIMIT_EUR} €: contanti ammessi.`,

@@ -4,7 +4,7 @@ import { toSnapshot } from "dinero.js";
 import BigNumber from "bignumber.js";
 import siteData from "@/data/site-data.json";
 import { estimatePayout, purityById, referenceQuotes } from "@/lib/pricing";
-import { spreadFor } from "@/lib/margins";
+import { effectiveSpread } from "@/lib/margins";
 import type { Voucher } from "@/lib/vouchers";
 import { marginStore, newVoucherCode, voucherStore } from "@/lib/server/repos";
 import { clientIp, denyUnlessAdmin, error, json, rateLimited } from "@/lib/server/http";
@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
 
   const grams = Math.round(parsed.data.grams * 10) / 10;
   const { base } = referenceQuotes();
-  const spread = spreadFor(await marginStore.read(), purity.id);
+  // Spread già al netto delle promozioni attive (stagionale, Heritage VIP).
+  const spread = effectiveSpread(await marginStore.read(), purity, grams);
   const amountCents = toSnapshot(estimatePayout(purity, grams, base.gold24k, base.silver, spread)).amount;
   const fullCents = toSnapshot(estimatePayout(purity, grams, base.gold24k, base.silver, 0)).amount;
 

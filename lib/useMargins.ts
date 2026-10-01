@@ -5,7 +5,7 @@ import { DEFAULT_MARGINS, type MarginSettings } from "@/lib/margins";
 
 const fetcher = (url: string) => axios.get<MarginSettings>(url).then((r) => r.data);
 
-export const MARGINS_KEY = "/api/admin/config";
+export const MARGINS_KEY = "/api/pricing";
 
 /** Spread decisi dal titolare: il calcolatore pubblico li rilegge al focus e ogni minuto. */
 export function useMargins() {

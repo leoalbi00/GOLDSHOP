@@ -7,7 +7,7 @@ import SimpleGoldCalculator from "@/components/SimpleGoldCalculator";
 import TrustAndReviews from "@/components/TrustAndReviews";
 import DirectLocation from "@/components/DirectLocation";
 import LiveGoldTrend from "@/components/LiveGoldTrend";
-import AdminQuickBar from "@/components/AdminQuickBar";
+import PromoBanner from "@/components/PromoBanner";
 
 const { address, contacts, trust } = siteData;
 
@@ -35,6 +35,7 @@ export default function Home() {
             <ScrollReveal parallax={0}>
               <SectionTitle id="calc-title" eyebrow="1 · Calcola" title="Quanto vale il tuo oro, adesso." />
             </ScrollReveal>
+            <PromoBanner />
             <ScrollReveal delay={0.1} parallax={20}>
               <SimpleGoldCalculator />
             </ScrollReveal>
@@ -98,9 +99,8 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center gap-3 border-t border-background/10 px-4 py-5 text-center text-xs text-background/50 sm:flex-row sm:gap-6">
-          <span>Quotazioni e stime online sono indicative; il valore finale è determinato in negozio.</span>
-          <AdminQuickBar />
+        <div className="border-t border-background/10 px-4 py-5 text-center text-xs text-background/50">
+          Quotazioni e stime online sono indicative; il valore finale è determinato in negozio.
         </div>
       </footer>
     </>

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdmin } from "@/lib/server/session";
+import { getAdminSession } from "@/lib/auth/server";
 
 export function clientIp(req: NextRequest): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0].trim() || req.headers.get("x-real-ip") || "local";
@@ -12,7 +12,7 @@ export const error = (message: string, status: number) => json({ error: message 
 
 /** Restituisce una risposta 401 se la richiesta non ha una sessione admin valida. */
 export async function denyUnlessAdmin(): Promise<NextResponse | null> {
-  return (await isAdmin()) ? null : error("Accesso riservato", 401);
+  return (await getAdminSession()) ? null : error("Accesso riservato", 401);
 }
 
 /** Limite semplice a finestra fissa per IP, per le route pubbliche che scrivono su disco. */

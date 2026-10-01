@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Info, Loader2, Lock, Minus, Plus } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { PURITIES, estimatePayout, formatEur, offerPerGram, spotPerGram } from "@/lib/pricing";
-import { spreadFor } from "@/lib/margins";
+import { effectiveSpread } from "@/lib/margins";
 import type { Voucher } from "@/lib/vouchers";
 import { useQuotes } from "@/lib/useQuotes";
 import { useMargins } from "@/lib/useMargins";
@@ -58,7 +58,7 @@ export default function BespokeCalculator() {
   const purity = TABS.find((p) => p.id === purityId) ?? TABS[0];
   const grams = parseGrams(rawGrams);
   const invalid = rawGrams.trim() !== "" && grams === null;
-  const spread = spreadFor(settings, purity.id);
+  const spread = effectiveSpread(settings, purity, grams ?? 0);
   const spot = spotPerGram(purity, gold24k, silver);
   const offer = offerPerGram(purity, gold24k, silver, spread);
   const payout = useMemo(

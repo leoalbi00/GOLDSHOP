@@ -7,8 +7,8 @@ import { Loader2, RotateCcw, Save } from "lucide-react";
 import { PURITIES, formatEur, offerPerGram, spotPerGram } from "@/lib/pricing";
 import { DEFAULT_MARGINS, spreadFor, type MarginSettings } from "@/lib/margins";
 import { useQuotes } from "@/lib/useQuotes";
-import { MARGINS_KEY, useMargins } from "@/lib/useMargins";
-import { apiError } from "@/lib/useAdminData";
+import { useMargins } from "@/lib/useMargins";
+import { MARGINS_WRITE_URL, apiError } from "@/lib/useAdminData";
 
 const pct = new Intl.NumberFormat("it-IT", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const toInput = (n: number) => n.toFixed(2).replace(".", ",");
@@ -36,7 +36,7 @@ export default function MarginController() {
     if (invalid) return;
     setSaving(true);
     try {
-      const { data } = await axios.put<MarginSettings>(MARGINS_KEY, { spreads: parsed });
+      const { data } = await axios.put<MarginSettings>(MARGINS_WRITE_URL, { spreads: parsed });
       await mutate(data, { revalidate: false });
       toast.success("Spread aggiornati: il calcolatore pubblico usa già i nuovi prezzi.");
     } catch (err) {
@@ -50,9 +50,9 @@ export default function MarginController() {
     <section aria-labelledby="margins-title">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 id="margins-title" className="font-serif text-2xl font-medium">
-            Spread al grammo
-          </h2>
+          <h1 id="margins-title" className="font-serif text-3xl font-medium">
+            Margini e spread al grammo
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Sottratto alla quotazione di Borsa del titolo. Ultima modifica:{" "}
             {dayjs(settings.updatedAt).format("DD/MM/YYYY HH:mm")}
@@ -123,6 +123,11 @@ export default function MarginController() {
           </tbody>
         </table>
       </div>
+      {(settings.promotions?.seasonal.active || settings.promotions?.heritage.active) && (
+        <p className="mt-4 border border-gold/30 bg-gold-soft p-3 text-sm text-gold">
+          Promozioni attive dalla sezione Marketing: lo spread mostrato al cliente è ridotto del bonus promozionale.
+        </p>
+      )}
       <p className="mt-3 text-xs text-muted-foreground">
         Salvato in <code>data/margin-settings.json</code>. I voucher già emessi mantengono il prezzo bloccato.
       </p>

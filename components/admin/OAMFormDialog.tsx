@@ -192,12 +192,12 @@ export default function OAMFormDialog({ voucher, onOpenChange }: { voucher: Vouc
                   "flex items-start gap-3 border p-3 text-sm sm:col-span-2",
                   !compliance.ok
                     ? "border-rose-700/30 bg-rose-50 text-rose-800"
-                    : compliance.traceableRequired
+                    : compliance.traceableRequired || compliance.nearLimit
                       ? "border-amber-700/30 bg-amber-50 text-amber-900"
                       : "border-guarantee/30 bg-guarantee-soft text-guarantee",
                 )}
               >
-                {compliance.ok ? <ShieldCheck className="mt-0.5 size-4 shrink-0" /> : <ShieldAlert className="mt-0.5 size-4 shrink-0" />}
+                {compliance.ok && !compliance.nearLimit ? <ShieldCheck className="mt-0.5 size-4 shrink-0" /> : <ShieldAlert className="mt-0.5 size-4 shrink-0" />}
                 <span>
                   <strong className="font-semibold">{formatEur(priceCents / 100)} · </strong>
                   {compliance.message}

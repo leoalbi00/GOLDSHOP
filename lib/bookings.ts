@@ -27,7 +27,7 @@ export interface Booking {
   notes: string;
   privateRoom: boolean;
   createdAt: string;
-  status: "requested" | "confirmed" | "cancelled";
+  status: "requested" | "confirmed" | "completed" | "cancelled";
 }
 
 export const bookingInputSchema = z.object({

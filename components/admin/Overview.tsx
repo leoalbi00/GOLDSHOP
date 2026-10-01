@@ -1,11 +1,9 @@
 "use client";
 import { useMemo, useState } from "react";
-import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { FileText, LogOut, MessageCircle, Phone, ScanLine, ShieldAlert } from "lucide-react";
+import { FileText, MessageCircle, Phone, ScanLine, ShieldAlert } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { formatEur } from "@/lib/pricing";
 import { isHotLead, voucherState, type Voucher, type VoucherState } from "@/lib/vouchers";
@@ -14,13 +12,9 @@ import { priorityMessageLink, telLink } from "@/lib/whatsapp-engine";
 import { STORE_TZ } from "@/lib/store-hours";
 import { useQuotes } from "@/lib/useQuotes";
 import { useBookings, useVouchers } from "@/lib/useAdminData";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import MarginController from "@/components/admin/MarginController";
 import QRScannerModal from "@/components/admin/QRScannerModal";
 import OAMFormDialog from "@/components/admin/OAMFormDialog";
 import ReviewBooster from "@/components/admin/ReviewBooster";
-import ExportData from "@/components/admin/ExportData";
-import BookingsList from "@/components/admin/BookingsList";
 import { HotLeadBadge, StateBadge, VolatilityBadge } from "@/components/admin/VoucherBadges";
 import { cn } from "@/lib/cn";
 
@@ -34,20 +28,18 @@ const FILTERS: { id: VoucherState | "all"; label: string }[] = [
   { id: "completed", label: "Completati" },
   { id: "expired", label: "Scaduti" },
 ];
-const tabCls =
-  "relative -mb-px px-1 pb-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=active]:text-foreground after:absolute after:inset-x-0 after:bottom-0 after:h-px data-[state=active]:after:bg-foreground";
 
-function Metric({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "risk" }) {
+function Metric({ label, value, sub, tone, small }: { label: string; value: string; sub?: string; tone?: "risk"; small?: boolean }) {
   return (
     <div className="bg-paper p-5">
       <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">{label}</div>
-      <div className={cn("mt-2 text-3xl font-medium tracking-tight tabular-nums", tone === "risk" && "text-rose-800")}>{value}</div>
+      <div className={cn("mt-2 font-medium tracking-tight tabular-nums", small ? "text-xl" : "text-3xl", tone === "risk" && "text-rose-800")}>{value}</div>
       {sub && <div className="mt-1 text-xs text-muted-foreground">{sub}</div>}
     </div>
   );
 }
 
-export default function AdminDashboard() {
+export default function Overview() {
   const { gold24k, silver } = useQuotes();
   const { data: vouchers = [], isLoading } = useVouchers();
   const { data: bookings = [] } = useBookings();
@@ -79,61 +71,57 @@ export default function AdminDashboard() {
   const shown = filter === "all" ? rows : rows.filter((r) => r.state === filter);
   const oamVoucher = vouchers.find((v) => v.code === oamCode) ?? null;
 
-  const logout = async () => {
-    await axios.delete("/api/admin/login");
-    window.location.reload();
+  const since30 = dayjs().subtract(30, "day");
+  const avgPerGram = (id: string) => {
+    const recent = vouchers.filter((v) => v.purityId === id && dayjs(v.createdAt).isAfter(since30));
+    const grams = recent.reduce((t, v) => t + v.grams, 0);
+    return grams ? recent.reduce((t, v) => t + v.amountCents, 0) / 100 / grams : null;
   };
+  const avg18 = avgPerGram("18K");
+  const avg24 = avgPerGram("24K");
+  const upcomingVip = bookings.filter((b) => b.status !== "cancelled" && b.status !== "completed" && b.date >= today).length;
+  const waLeads = active.filter((r) => r.v.contact).length;
 
   return (
-    <TooltipProvider delayDuration={150}>
-      <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div className="flex items-baseline gap-3">
-            <span className="font-serif text-2xl font-medium">
-              Compro Oro <span className="italic text-gold">123</span>
-            </span>
-            <span className="hidden text-[11px] uppercase tracking-[0.2em] text-muted-foreground sm:inline">Area riservata</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setScanner({ open: true, code: null })}
-              className="inline-flex h-10 items-center gap-2 bg-gold px-4 text-sm font-semibold text-white shadow-[0_3px_0_0_#5b2808] transition-[transform,box-shadow] active:translate-y-[3px] active:shadow-none"
-            >
-              <ScanLine className="size-4" /> Scansiona voucher
-            </button>
-            <button type="button" onClick={logout} className="inline-flex size-10 items-center justify-center border border-hairline hover:bg-muted" aria-label="Esci">
-              <LogOut className="size-4" />
-            </button>
-          </div>
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-serif text-3xl font-medium">Panoramica operativa</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Quotazione 24K {formatEur(gold24k)}/g · aggiornamento ogni 15 secondi</p>
         </div>
-      </header>
+        <button
+          type="button"
+          onClick={() => setScanner({ open: true, code: null })}
+          className="inline-flex h-11 items-center gap-2 bg-gold px-5 text-sm font-semibold text-white shadow-[0_3px_0_0_#5b2808] transition-[transform,box-shadow] active:translate-y-[3px] active:shadow-none"
+        >
+          <ScanLine className="size-4" /> Scansiona voucher
+        </button>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        <div className="grid grid-cols-2 gap-px border border-hairline bg-hairline lg:grid-cols-4">
-          <Metric label="Voucher attivi" value={String(active.length)} sub={hotActive ? `${hotActive} hot lead da contattare` : "Nessun hot lead"} />
-          <Metric label="Oro bloccato oggi" value={`${gramsFmt.format(gramsToday)} g`} sub={`Quotazione 24K ${formatEur(gold24k)}/g`} />
-          <Metric label="Margine stimato" value={formatEur(marginDone / 100)} sub={`+ ${formatEur(marginPipeline / 100)} sui voucher attivi`} />
-          <Metric
-            label="Rischio margine"
-            value={String(atRisk)}
-            tone={atRisk ? "risk" : undefined}
-            sub={`Voucher attivi con mercato −${VOLATILITY_THRESHOLD_PCT}% o oltre`}
-          />
-        </div>
+      <div className="mt-6 grid grid-cols-2 gap-px border border-hairline bg-hairline lg:grid-cols-4">
+        <Metric label="Oro bloccato oggi" value={`${gramsFmt.format(gramsToday)} g`} sub={`${active.length} voucher attivi`} />
+        <Metric
+          label="Valutazione media 18K / 24K"
+          value={`${avg18 ? formatEur(avg18) : "—"} / ${avg24 ? formatEur(avg24) : "—"}`}
+          sub="€/g riconosciuti, ultimi 30 giorni"
+          small
+        />
+        <Metric label="Appuntamenti VIP" value={String(upcomingVip)} sub={pendingBookings ? `${pendingBookings} da confermare` : "In programma"} />
+        <Metric label="Lead WhatsApp attivi" value={String(waLeads)} sub={hotActive ? `${hotActive} hot lead (oltre ${siteData.pricing.hotLeadGrams} g)` : "Con contatto lasciato"} />
+      </div>
+      <div className="mt-px grid grid-cols-2 gap-px border border-t-0 border-hairline bg-hairline">
+        <Metric label="Margine stimato" value={formatEur(marginDone / 100)} sub={`+ ${formatEur(marginPipeline / 100)} sui voucher attivi`} small />
+        <Metric
+          label="Rischio margine"
+          value={String(atRisk)}
+          tone={atRisk ? "risk" : undefined}
+          sub={`Voucher attivi con mercato −${VOLATILITY_THRESHOLD_PCT}% o oltre`}
+          small
+        />
+      </div>
 
-        <TabsPrimitive.Root defaultValue="vouchers" className="mt-10">
-          <TabsPrimitive.List className="flex gap-6 overflow-x-auto border-b border-border" aria-label="Sezioni amministrazione">
-            <TabsPrimitive.Trigger value="vouchers" className={tabCls}>Voucher</TabsPrimitive.Trigger>
-            <TabsPrimitive.Trigger value="margins" className={tabCls}>Margini</TabsPrimitive.Trigger>
-            <TabsPrimitive.Trigger value="bookings" className={tabCls}>
-              Appuntamenti
-              {pendingBookings > 0 && <span className="ml-1.5 rounded-full bg-gold px-1.5 text-[10px] text-white">{pendingBookings}</span>}
-            </TabsPrimitive.Trigger>
-            <TabsPrimitive.Trigger value="export" className={tabCls}>Registro</TabsPrimitive.Trigger>
-          </TabsPrimitive.List>
-
-          <TabsPrimitive.Content value="vouchers" className="pt-6 outline-none">
+      <section className="mt-10" aria-labelledby="vouchers-title">
+            <h2 id="vouchers-title" className="mb-4 font-serif text-2xl font-medium">Voucher e lead</h2>
             <div className="flex flex-wrap gap-1.5">
               {FILTERS.map((f) => (
                 <button
@@ -240,32 +228,7 @@ export default function AdminDashboard() {
                 prezzo bloccato il margine si riduce.
               </p>
             )}
-          </TabsPrimitive.Content>
-
-          <TabsPrimitive.Content value="margins" className="pt-6 outline-none">
-            <MarginController />
-          </TabsPrimitive.Content>
-
-          <TabsPrimitive.Content value="bookings" className="pt-6 outline-none">
-            <BookingsList />
-          </TabsPrimitive.Content>
-
-          <TabsPrimitive.Content value="export" className="grid gap-6 pt-6 outline-none lg:grid-cols-2">
-            <ExportData vouchers={vouchers} />
-            <div className="border border-hairline p-6 text-sm text-muted-foreground">
-              <h2 className="font-serif text-2xl font-medium text-foreground">Note di conformità</h2>
-              <ul className="mt-3 list-disc space-y-2 pl-5">
-                <li>
-                  Operazioni da {siteData.compliance.cashLimitEur} € in su: solo bonifico o assegno (art. 5 D.Lgs. 92/2017). Il
-                  salvataggio della scheda in contanti oltre soglia è bloccato.
-                </li>
-                <li>Ogni scheda va stampata, firmata dal cliente e conservata con copia del documento e foto degli oggetti.</li>
-                <li>I dati personali restano solo sul server del negozio, in <code>data/store/</code>.</li>
-              </ul>
-            </div>
-          </TabsPrimitive.Content>
-        </TabsPrimitive.Root>
-      </main>
+      </section>
 
       <QRScannerModal
         open={scanner.open}
@@ -274,6 +237,6 @@ export default function AdminDashboard() {
         onCompleted={(v) => setOamCode(v.code)}
       />
       <OAMFormDialog voucher={scanner.open ? null : oamVoucher} onOpenChange={(o) => !o && setOamCode(null)} />
-    </TooltipProvider>
+    </>
   );
 }

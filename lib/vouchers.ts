@@ -47,6 +47,8 @@ export interface Voucher {
   createdAt: string;
   expiresAt: string;
   status: "active" | "completed";
+  /** "banco": operazione registrata in negozio senza voucher online. */
+  origin?: "online" | "banco";
   completedAt?: string;
   contact?: { name: string; phone: string; consentAt: string };
   oam?: OamRecord;

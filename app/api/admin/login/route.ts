@@ -1,38 +1,40 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { SESSION_COOKIE, adminPin, checkPin, createSessionToken, isAdmin, loginBlocked, recordLogin } from "@/lib/server/session";
+import { SESSION_COOKIE, createSessionToken, sessionCookieOptions } from "@/lib/auth/session";
+import { credentialsConfigured, verifyCredentials } from "@/lib/auth/credentials";
+import { clearLoginFailures, loginLockMinutes, registerFailedLogin } from "@/lib/auth/rate-limit";
 import { clientIp, error, json } from "@/lib/server/http";
 
-/** Dice solo se la sessione corrente è del titolare (per mostrare la quick-bar). */
-export async function GET() {
-  return json({ admin: await isAdmin(), pinLength: adminPin()?.length ?? 4 });
-}
+const loginSchema = z.object({
+  username: z.string().trim().min(1).max(64),
+  password: z.string().min(1).max(128),
+});
 
 export async function POST(req: NextRequest) {
-  if (adminPin() === null) return error("ADMIN_PIN non configurato sul server", 503);
+  if (!credentialsConfigured()) return error("Accesso non configurato sul server", 503);
   const ip = clientIp(req);
-  const wait = loginBlocked(ip);
+  const wait = await loginLockMinutes(ip);
   if (wait) return error(`Troppi tentativi. Riprova tra ${wait} minuti.`, 429);
 
-  const body = z.object({ pin: z.string().regex(/^\d{4,8}$/) }).safeParse(await req.json().catch(() => null));
-  const ok = body.success && checkPin(body.data.pin);
-  recordLogin(ip, ok);
-  if (!ok) return error("PIN errato", 401);
+  const parsed = loginSchema.safeParse(await req.json().catch(() => null));
+  const ok = parsed.success && (await verifyCredentials(parsed.data.username, parsed.data.password));
+  if (!ok) {
+    const left = await registerFailedLogin(ip);
+    return left > 0
+      ? error(`Credenziali non valide. Tentativi rimasti: ${left}.`, 401)
+      : error("Troppi tentativi. Accesso bloccato per 15 minuti.", 429);
+  }
 
-  const { token, maxAge } = createSessionToken();
+  const token = await createSessionToken(parsed.data.username);
+  if (!token) return error("ADMIN_SESSION_SECRET mancante o troppo corto (min. 32 caratteri)", 503);
+  await clearLoginFailures(ip);
   const res = json({ ok: true });
-  res.cookies.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge,
-  });
+  res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions);
   return res;
 }
 
 export async function DELETE() {
   const res = json({ ok: true });
-  res.cookies.delete(SESSION_COOKIE);
+  res.cookies.set(SESSION_COOKIE, "", { ...sessionCookieOptions, maxAge: 0 });
   return res;
 }

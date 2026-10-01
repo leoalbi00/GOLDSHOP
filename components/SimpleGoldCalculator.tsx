@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2, Lock } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { PURITIES, estimatePayout, formatEur, offerPerGram } from "@/lib/pricing";
-import { spreadFor } from "@/lib/margins";
+import { effectiveSpread, promosFor } from "@/lib/margins";
 import type { Voucher } from "@/lib/vouchers";
 import { lockRequestToShopLink } from "@/lib/whatsapp-engine";
 import { useQuotes } from "@/lib/useQuotes";
@@ -40,7 +40,8 @@ export default function SimpleGoldCalculator() {
   const { purity } = OPTIONS.find((o) => o.id === purityId) ?? OPTIONS[0];
   const grams = parseGrams(raw);
   const invalid = raw.trim() !== "" && grams === null;
-  const spread = spreadFor(settings, purity.id);
+  const spread = effectiveSpread(settings, purity, grams ?? 0);
+  const promos = promosFor(settings, purity, grams ?? 0);
   const cents = useMemo(
     () => (grams ? toSnapshot(estimatePayout(purity, grams, gold24k, silver, spread)).amount : 0),
     [purity, grams, gold24k, silver, spread],
@@ -122,7 +123,14 @@ export default function SimpleGoldCalculator() {
 
         <div className="flex flex-col justify-between gap-8 bg-guarantee-soft/50 p-6 sm:p-10">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-[0.16em] text-guarantee">Stima netta</div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-semibold uppercase tracking-[0.16em] text-guarantee">Stima netta</span>
+              {promos.map((p) => (
+                <span key={p.id} className="rounded-full bg-gold px-2.5 py-0.5 text-[11px] font-bold text-white">
+                  {p.label} +{formatEur(p.bonusPerGram)}/g
+                </span>
+              ))}
+            </div>
             <div className="mt-2 text-[clamp(3.25rem,8vw,5.5rem)] font-bold leading-none tracking-tight tabular-nums text-guarantee">
               <NumberTicker
                 aria-hidden

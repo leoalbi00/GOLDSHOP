@@ -7,5 +7,20 @@
     "9K": 2.5,
     "AG": 0.15,
     "AG925": 0.15
+  },
+  "promotions": {
+    "seasonal": {
+      "active": false,
+      "season": "summer",
+      "bonusPerGram": 0.8,
+      "purityIds": [
+        "18K"
+      ]
+    },
+    "heritage": {
+      "active": false,
+      "minGrams": 100,
+      "bonusPerGram": 0.5
+    }
   }
 }

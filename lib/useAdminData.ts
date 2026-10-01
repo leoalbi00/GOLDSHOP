@@ -15,6 +15,8 @@ async function fetcher<T>(url: string): Promise<T> {
 }
 
 export const VOUCHERS_KEY = "/api/vouchers";
+/** Scrittura di spread e promozioni (la lettura pubblica è /api/pricing). */
+export const MARGINS_WRITE_URL = "/api/admin/config";
 export const BOOKINGS_KEY = "/api/bookings";
 
 export function useVouchers() {

@@ -4,6 +4,7 @@ import siteData from "@/data/site-data.json";
 import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
 import { cn } from "@/lib/cn";
 import DistanceCalculator from "@/components/DistanceCalculator";
+import VIPBookingModal from "@/components/VIPBookingModal";
 
 const { address, hours, contacts } = siteData;
 const fullAddress = `${address.street}, ${address.cap} ${address.city}`;
@@ -75,6 +76,12 @@ export default function DirectLocation() {
             <Phone className="size-4" /> Chiama {contacts.phone}
           </a>
         </div>
+
+        <VIPBookingModal>
+          <button type="button" className="text-left text-sm font-semibold text-gold underline-offset-4 hover:underline">
+            Eredità, orologi o lotti importanti? Prenota un appuntamento riservato →
+          </button>
+        </VIPBookingModal>
 
         <dl className="divide-y divide-border border-y border-border text-sm">
           {hours.map((h) => (
