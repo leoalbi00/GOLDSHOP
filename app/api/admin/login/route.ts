@@ -1,7 +1,12 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
-import { SESSION_COOKIE, adminPin, checkPin, createSessionToken, loginBlocked, recordLogin } from "@/lib/server/session";
+import { SESSION_COOKIE, adminPin, checkPin, createSessionToken, isAdmin, loginBlocked, recordLogin } from "@/lib/server/session";
 import { clientIp, error, json } from "@/lib/server/http";
+
+/** Dice solo se la sessione corrente è del titolare (per mostrare la quick-bar). */
+export async function GET() {
+  return json({ admin: await isAdmin(), pinLength: adminPin()?.length ?? 4 });
+}
 
 export async function POST(req: NextRequest) {
   if (adminPin() === null) return error("ADMIN_PIN non configurato sul server", 503);

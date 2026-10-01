@@ -2,7 +2,6 @@
 import { useMemo, useState } from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { toSnapshot } from "dinero.js";
-import confetti from "canvas-confetti";
 import axios from "axios";
 import { toast } from "sonner";
 import { Info, Loader2, Lock, Minus, Plus } from "lucide-react";
@@ -28,7 +27,6 @@ const TAB_LABEL: Record<string, { name: string; title: string }> = {
   AG925: { name: "Argento", title: "925" },
 };
 const MAX_GRAMS = 5000;
-const GOLD_CONFETTI = ["#92400e", "#b45309", "#d6b37a", "#111827"];
 
 const gramsFmt = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -74,9 +72,8 @@ export default function BespokeCalculator() {
     setRawGrams(toRaw(next));
   };
 
-  const lock = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const lock = async () => {
     if (!payout || !grams || locking) return;
-    const r = e.currentTarget.getBoundingClientRect();
     setLocking(true);
     try {
       // Il server ricalcola l'importo con quotazione e spread correnti e registra il voucher.
@@ -89,17 +86,6 @@ export default function BespokeCalculator() {
     } finally {
       setLocking(false);
     }
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    confetti({
-      particleCount: 70,
-      spread: 62,
-      startVelocity: 32,
-      scalar: 0.8,
-      ticks: 160,
-      colors: GOLD_CONFETTI,
-      origin: { x: (r.left + r.width / 2) / window.innerWidth, y: r.top / window.innerHeight },
-      zIndex: 60,
-    });
   };
 
   return (

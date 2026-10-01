@@ -3,6 +3,7 @@ import { Navigation, Phone } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
 import { cn } from "@/lib/cn";
+import DistanceCalculator from "@/components/DistanceCalculator";
 
 const { address, hours, contacts } = siteData;
 const fullAddress = `${address.street}, ${address.cap} ${address.city}`;
@@ -47,6 +48,8 @@ export default function DirectLocation() {
             {address.cap} {address.city} <span className="text-foreground">(Zona Stazione)</span>
           </div>
         </address>
+
+        <DistanceCalculator />
 
         <div className="grid gap-3">
           <a

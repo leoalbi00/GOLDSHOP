@@ -2,7 +2,8 @@
 import { useMemo, useState } from "react";
 import axios from "axios";
 import { toSnapshot } from "dinero.js";
-import { Loader2, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
+import { Loader2, Lock } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { PURITIES, estimatePayout, formatEur, offerPerGram } from "@/lib/pricing";
 import { spreadFor } from "@/lib/margins";
@@ -11,6 +12,7 @@ import { lockRequestToShopLink } from "@/lib/whatsapp-engine";
 import { useQuotes } from "@/lib/useQuotes";
 import { useMargins } from "@/lib/useMargins";
 import { NumberTicker } from "@/components/ui/number-ticker";
+import VoucherLockModal from "@/components/VoucherLockModal";
 import { cn } from "@/lib/cn";
 
 const OPTIONS = [
@@ -33,6 +35,7 @@ export default function SimpleGoldCalculator() {
   const [raw, setRaw] = useState("10");
   const [purityId, setPurityId] = useState("18K");
   const [sending, setSending] = useState(false);
+  const [voucher, setVoucher] = useState<Voucher | null>(null);
 
   const { purity } = OPTIONS.find((o) => o.id === purityId) ?? OPTIONS[0];
   const grams = parseGrams(raw);
@@ -43,24 +46,22 @@ export default function SimpleGoldCalculator() {
     [purity, grams, gold24k, silver, spread],
   );
 
-  const lockOnWhatsApp = async () => {
+  const lock = async () => {
     if (!grams || sending) return;
     setSending(true);
-    // Finestra aperta subito, nel gesto dell'utente: dopo un await i browser bloccano i popup.
-    const win = window.open("about:blank", "_blank");
-    if (win) win.opener = null;
-    let link: string;
     try {
       // Il voucher registrato compare nella dashboard del negozio (hot lead, conclusione, scheda OAM).
       const { data } = await axios.post<Voucher>("/api/vouchers", { purityId: purity.id, grams });
-      link = lockRequestToShopLink(data);
+      setVoucher(data);
     } catch {
-      link = lockRequestToShopLink({ purityLabel: purity.label, grams, amountCents: cents });
+      // Senza archivio (es. server non disponibile) il cliente può comunque scrivere al negozio.
+      const link = lockRequestToShopLink({ purityLabel: purity.label, grams, amountCents: cents });
+      toast.error("Non siamo riusciti a registrare il voucher.", {
+        action: { label: "Scrivi su WhatsApp", onClick: () => window.open(link, "_blank", "noopener") },
+      });
     } finally {
       setSending(false);
     }
-    if (win) win.location.href = link;
-    else window.location.href = link;
   };
 
   return (
@@ -144,20 +145,20 @@ export default function SimpleGoldCalculator() {
           <div>
             <button
               type="button"
-              onClick={lockOnWhatsApp}
+              onClick={lock}
               disabled={!grams || sending}
               className="flex min-h-20 w-full items-center justify-center gap-3 bg-[#1f9d55] px-6 text-lg font-bold text-white shadow-[0_5px_0_0_#13703b] transition-[transform,box-shadow,background-color] hover:bg-[#1b8a4b] active:translate-y-[5px] active:shadow-none disabled:opacity-40 sm:text-xl"
             >
-              {sending ? <Loader2 className="size-6 animate-spin" /> : <MessageCircle className="size-6" />}
-              Blocca Prezzo su WhatsApp
+              {sending ? <Loader2 className="size-6 animate-spin" /> : <Lock className="size-6" />}
+              Blocca il Prezzo per 24h
             </button>
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Si apre WhatsApp con il messaggio pronto per il negozio ({siteData.contacts.phone}). Prezzo bloccato{" "}
-              {siteData.pricing.voucherValidityHours} ore.
+              Ricevi il tuo certificato con QR e lo invii al negozio su WhatsApp ({siteData.contacts.phone}) in un tocco.
             </p>
           </div>
         </div>
       </div>
+      <VoucherLockModal voucher={voucher} onClose={() => setVoucher(null)} />
     </div>
   );
 }

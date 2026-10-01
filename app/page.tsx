@@ -6,6 +6,8 @@ import ScrollReveal from "@/components/ScrollReveal";
 import SimpleGoldCalculator from "@/components/SimpleGoldCalculator";
 import TrustAndReviews from "@/components/TrustAndReviews";
 import DirectLocation from "@/components/DirectLocation";
+import LiveGoldTrend from "@/components/LiveGoldTrend";
+import AdminQuickBar from "@/components/AdminQuickBar";
 
 const { address, contacts, trust } = siteData;
 
@@ -35,6 +37,17 @@ export default function Home() {
             </ScrollReveal>
             <ScrollReveal delay={0.1} parallax={20}>
               <SimpleGoldCalculator />
+            </ScrollReveal>
+          </div>
+        </section>
+
+        <section id="mercato" aria-labelledby="trend-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              <SectionTitle id="trend-title" eyebrow="Borsa dell'oro" title="Il prezzo, giorno per giorno." />
+            </ScrollReveal>
+            <ScrollReveal delay={0.1} parallax={16}>
+              <LiveGoldTrend />
             </ScrollReveal>
           </div>
         </section>
@@ -85,8 +98,9 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <div className="border-t border-background/10 px-4 py-5 text-center text-xs text-background/50">
-          Quotazioni e stime online sono indicative; il valore finale è determinato in negozio.
+        <div className="flex flex-col items-center justify-center gap-3 border-t border-background/10 px-4 py-5 text-center text-xs text-background/50 sm:flex-row sm:gap-6">
+          <span>Quotazioni e stime online sono indicative; il valore finale è determinato in negozio.</span>
+          <AdminQuickBar />
         </div>
       </footer>
     </>
