@@ -20,7 +20,7 @@ export default function ShopGallery({ photos }: { photos: typeof SHOP_PHOTOS }) 
     <ul className="grid gap-6 md:grid-cols-3">
       {photos.map((p) => (
         <li key={p.file}>
-          <figure>
+          <figure className="group">
             <div className="border border-[#b8925a]/60 p-1.5">
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <Image
@@ -28,7 +28,7 @@ export default function ShopGallery({ photos }: { photos: typeof SHOP_PHOTOS }) 
                   alt={p.alt}
                   fill
                   sizes="(min-width: 768px) 33vw, 100vw"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 />
               </div>
             </div>
