@@ -1,14 +1,14 @@
 # Foto di atmosfera
 
-Foto reali da Wikimedia Commons, tutte **CC0 o pubblico dominio**: si possono usare senza citare l'autore.
-Non sono foto del negozio: vanno usate con didascalie neutre, mai come "la nostra sede".
-Se aggiungi una foto con licenza CC BY / CC BY-SA, il credito all'autore diventa obbligatorio.
+Foto reali da Wikimedia Commons. Non sono foto del negozio: usarle con didascalie neutre, mai come "la nostra sede".
+Quattro foto sono CC BY / CC BY-SA: il credito all'autore è obbligatorio ed è nel riquadro "Crediti fotografici"
+sotto la galleria (components/AtmosphereGallery.tsx). Non rimuoverlo finché queste foto sono in uso.
 
-| File | Fonte | Licenza |
+| File | Autore | Licenza |
 | --- | --- | --- |
-| gold-ingots.jpg | https://commons.wikimedia.org/wiki/File:Gold_Ingots_on_white_background.jpg | Pubblico dominio |
-| fine-gold-999.jpg | https://commons.wikimedia.org/wiki/File:Chip_gold_bullion_bar.jpg | CC0 |
-| sovereigns.jpg | https://commons.wikimedia.org/wiki/File:Branch_Mint_Sovereigns.jpg | CC0 |
-| krugerrand.jpg | https://commons.wikimedia.org/wiki/File:Krugerrand_1975_obverse_1_oz_squared_background.jpg | CC0 |
-| gold-necklace.jpg | https://commons.wikimedia.org/wiki/File:Gold_necklace_MET_DP118060.jpg | CC0 (Metropolitan Museum of Art) |
-| gold-pendant.jpg | https://commons.wikimedia.org/wiki/File:Gold_ring-shaped_pendant.jpg | CC0 |
+| bullion-coins.jpg | Apollo2005 | CC BY-SA 3.0 |
+| gold-ingots.jpg | Szaaman | Pubblico dominio |
+| sovereigns.jpg | Snd3054 | CC0 |
+| krugerrands.jpg | Gage Skidmore | CC BY-SA 3.0 |
+| gold-rings.jpg | Thomas Quine | CC BY 2.0 |
+| scrap-gold.jpg | W.carter | CC BY 4.0 |

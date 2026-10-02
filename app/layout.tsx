@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import siteData from "@/data/site-data.json";
 import SmoothScroll from "@/components/SmoothScroll";
 import LocalBusinessSchema from "@/components/LocalBusinessSchema";
+import DevInspector from "@/components/DevInspector";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen antialiased">
         <LocalBusinessSchema siteUrl={siteUrl} />
         <SmoothScroll>{children}</SmoothScroll>
+        <DevInspector />
         <Toaster
           position="bottom-center"
           toastOptions={{ className: "!rounded-sm !border-hairline !bg-paper !font-sans !text-foreground" }}
