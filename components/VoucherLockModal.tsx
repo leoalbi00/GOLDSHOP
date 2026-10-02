@@ -32,7 +32,7 @@ export function goldConfetti() {
   setTimeout(() => void confetti({ ...shared, particleCount: 60, spread: 120, startVelocity: 30, origin: { x: 0.5, y: 0.35 } }), 250);
 }
 
-function useCountdown(expiresAt: string) {
+export function useCountdown(expiresAt: string) {
   const [left, setLeft] = useState(() => new Date(expiresAt).getTime() - Date.now());
   useEffect(() => {
     const id = setInterval(() => setLeft(new Date(expiresAt).getTime() - Date.now()), 1000);
@@ -46,7 +46,7 @@ function useCountdown(expiresAt: string) {
  * QR come <img>: html2canvas non riproduce il contenuto dei <canvas>, quindi il QR viene disegnato
  * su un canvas nascosto e mostrato come immagine già caricata.
  */
-function QrImage({ value }: { value: string }) {
+export function QrImage({ value }: { value: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
@@ -130,7 +130,7 @@ function Certificate({ voucher, innerRef }: { voucher: Voucher; innerRef: React.
 }
 
 /** Il cliente lascia nome e cellulare e riceve il voucher su WhatsApp. */
-function SendToMyself({ voucher }: { voucher: Voucher }) {
+export function SendToMyself({ voucher }: { voucher: Voucher }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [consent, setConsent] = useState(false);

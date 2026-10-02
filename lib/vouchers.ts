@@ -1,5 +1,6 @@
 import siteData from "@/data/site-data.json";
 import type { Metal } from "@/lib/pricing";
+import type { VipLevel } from "@/lib/margins";
 
 export type PaymentMethod = "contanti" | "bonifico" | "assegno";
 
@@ -42,6 +43,9 @@ export interface Voucher {
   /** Margine stimato del negozio: spread × grammi. */
   marginCents: number;
   spreadPerGram: number;
+  /** Livello VIP del calcolatore e relativo bonus €/g, già compreso in amountCents. */
+  vipLevel?: VipLevel;
+  vipBonusPerGram?: number;
   /** Quotazione base (oro 24K o argento 999, €/g) al momento del blocco. */
   baseAtLock: number;
   createdAt: string;

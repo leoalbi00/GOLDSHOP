@@ -1,12 +1,12 @@
 "use client";
-import { Phone } from "lucide-react";
+import { Check, Phone } from "lucide-react";
 import siteData from "@/data/site-data.json";
 import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
 import DistanceCalculator from "@/components/DistanceCalculator";
 import VIPBookingModal from "@/components/VIPBookingModal";
 import { cn } from "@/lib/cn";
 
-const { address, hours, contacts } = siteData;
+const { address, hours, contacts, visitPerks } = siteData;
 const fullAddress = `${address.street}, ${address.cap} ${address.city}`;
 const q = encodeURIComponent(fullAddress);
 const { lat, lng } = address.coordinates;
@@ -45,7 +45,7 @@ function LiveStatus() {
 export default function LuxuryLocation() {
   return (
     <div className="grid gap-6 lg:grid-cols-12">
-      <div className="border border-amber-500/20 shadow-[0_24px_48px_-32px_rgba(146,64,14,0.35)] lg:col-span-5">
+      <div className="overflow-hidden rounded-2xl border border-amber-500/20 shadow-[0_24px_48px_-32px_rgba(146,64,14,0.35)] lg:col-span-5">
         <div className={cn(glass, "flex h-full flex-col gap-8 p-7 sm:p-10")}>
           <LiveStatus />
 
@@ -56,12 +56,26 @@ export default function LuxuryLocation() {
             </div>
           </address>
 
+          <ul className="space-y-3">
+            {visitPerks.visit.map((p) => (
+              <li key={p.title} className="flex gap-3">
+                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-guarantee text-white">
+                  <Check className="size-3.5" strokeWidth={3} />
+                </span>
+                <span>
+                  <span className="block font-semibold">{p.title}</span>
+                  <span className="block text-sm leading-relaxed text-muted-foreground">{p.body}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+
           <div className="grid grid-cols-2 gap-3">
             <a
               href={GOOGLE_NAV}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-14 items-center justify-center gap-2 bg-foreground text-sm font-semibold tracking-wide text-[#f5e6b8] ring-1 ring-[#b8925a]/60 transition-colors hover:bg-[#1f2937]"
+              className="flex h-14 items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold tracking-wide text-[#f5e6b8] ring-1 ring-[#b8925a]/60 transition-colors hover:bg-[#1f2937]"
             >
               <span aria-hidden>🗺️</span> Apri in Google Maps
             </a>
@@ -69,13 +83,13 @@ export default function LuxuryLocation() {
               href={WAZE_NAV}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-14 items-center justify-center gap-2 bg-foreground text-sm font-semibold tracking-wide text-[#f5e6b8] ring-1 ring-[#b8925a]/60 transition-colors hover:bg-[#1f2937]"
+              className="flex h-14 items-center justify-center gap-2 rounded-xl bg-foreground text-sm font-semibold tracking-wide text-[#f5e6b8] ring-1 ring-[#b8925a]/60 transition-colors hover:bg-[#1f2937]"
             >
               <span aria-hidden>🚘</span> Avvia Waze
             </a>
             <a
               href={`tel:${contacts.phoneIntl}`}
-              className="col-span-2 flex h-12 items-center justify-center gap-2 border border-[#b8925a]/60 text-sm font-semibold transition-colors hover:bg-[#f5e6b8]/40"
+              className="col-span-2 flex h-12 items-center justify-center gap-2 rounded-xl border border-[#b8925a]/60 text-sm font-semibold transition-colors hover:bg-[#f5e6b8]/40"
             >
               <Phone className="size-4 text-gold" /> {contacts.phone}
             </a>
@@ -100,8 +114,8 @@ export default function LuxuryLocation() {
         </div>
       </div>
 
-      <div className={cn(goldFrame, "min-h-[420px] lg:col-span-7")}>
-        <div className="relative h-full min-h-[420px] overflow-hidden bg-[#fffdf7]">
+      <div className={cn(goldFrame, "min-h-[420px] rounded-2xl lg:col-span-7")}>
+        <div className="relative h-full min-h-[420px] overflow-hidden rounded-[calc(1rem-1px)] bg-[#fffdf7]">
           <iframe
             title={`Mappa: ${fullAddress}, zona Stazione di Bergamo`}
             src={`https://maps.google.com/maps?q=${q}&z=16&output=embed`}

@@ -3,9 +3,31 @@ import { useEffect, useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ArrowDown, MapPin, Scale, ShieldCheck } from "lucide-react";
 import siteData from "@/data/site-data.json";
+import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
+import { cn } from "@/lib/cn";
 
 const TITLE = "Valutazione Oro in Tempo Reale a Bergamo";
 const { address, trust } = siteData;
+
+/** Badge in tempo reale (ora di Bergamo): "Aperto ora" solo quando il negozio è davvero aperto. */
+function OpenNowBadge() {
+  const s = useStoreStatus();
+  return (
+    <a
+      href="#visita"
+      className={cn(
+        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold backdrop-blur-md transition-colors",
+        s?.open ? "border-emerald-300/50 bg-emerald-400/15 hover:bg-emerald-400/25" : "border-white/20 bg-white/10 hover:bg-white/20",
+      )}
+    >
+      <span className="relative flex size-2">
+        {s?.open && <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75 motion-reduce:hidden" />}
+        <span className={cn("relative inline-flex size-2 rounded-full", s?.open ? "bg-emerald-400" : s ? "bg-rose-400" : "bg-white/50")} />
+      </span>
+      {!s ? address.street : s.open ? `Aperto ora in ${address.street}` : `${reopensLabel(s)} · ${address.street}`}
+    </a>
+  );
+}
 
 /**
  * Hero a tutto schermo con video di sfondo (Mixkit, licenza gratuita, 720p senza audio, ~650 KB).
@@ -55,6 +77,7 @@ export default function HeroVideo() {
           transition={{ duration: 0.6 }}
           className="flex flex-wrap items-center gap-2"
         >
+          <OpenNowBadge />
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium backdrop-blur-md">
             <ShieldCheck className="size-3.5 text-emerald-300" /> Iscritto Registro OAM
           </span>

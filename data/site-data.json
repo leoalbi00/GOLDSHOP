@@ -101,5 +101,32 @@
     "_note": "Dati dichiarati dal titolare. 'yearsInBergamo' compare come '+N Anni a Bergamo': tenerlo aggiornato e veritiero. 'story' sostituisce il testo predefinito di 'Chi siamo'.",
     "yearsInBergamo": 10,
     "story": ""
+  },
+  "visitPerks": {
+    "_note": "Vantaggi per chi viene in negozio, mostrati sul voucher e nella sezione 'Vieni a trovarci'. Devono corrispondere a ciò che il negozio offre davvero: togli una voce per farla sparire dal sito.",
+    "voucherBadges": [
+      {
+        "icon": "🅿️",
+        "label": "Ticket Parcheggio Stazione Rimborsato"
+      },
+      {
+        "icon": "☕",
+        "label": "Caffè offerto in Via Maj"
+      }
+    ],
+    "visit": [
+      {
+        "title": "Parcheggio convenzionato",
+        "body": "Parcheggi in zona Stazione: ti rimborsiamo il ticket alla cassa."
+      },
+      {
+        "title": "Perizia gratuita senza impegno",
+        "body": "Pesata a vista e verifica del titolo davanti a te. Se non ti convince, non vendi."
+      },
+      {
+        "title": "Superiamo le stime della concorrenza",
+        "body": "Hai già un preventivo scritto di un altro compro oro a Bergamo? Portalo: lo valutiamo e proviamo a superarlo."
+      }
+    ]
   }
 }

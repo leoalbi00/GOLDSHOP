@@ -87,10 +87,12 @@ export function lockRequestToShopLink(r: {
   amountCents: number;
   code?: string;
   expiresAt?: string;
+  vipBonusPerGram?: number;
 }): string {
   const lines = [
     `Buongiorno, vorrei bloccare il prezzo del mio oro.`,
     `${r.purityLabel} · ${gramsFmt.format(r.grams)} g · Stima netta: ${formatEur(r.amountCents / 100)}`,
+    r.vipBonusPerGram ? `Bonus VIP incluso: +${formatEur(r.vipBonusPerGram)}/g` : null,
     r.code ? `Codice voucher: ${r.code}` : null,
     r.expiresAt ? `Valido fino al: ${expiry({ expiresAt: r.expiresAt })}` : null,
     `Passo in negozio in ${address.street} per la pesatura a vista.`,

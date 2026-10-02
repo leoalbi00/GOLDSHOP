@@ -4,16 +4,12 @@ import Header from "@/components/Header";
 import HeroVideo from "@/components/HeroVideo";
 import ScrollReveal from "@/components/ScrollReveal";
 import PromoBanner from "@/components/PromoBanner";
-import AboutUs from "@/components/AboutUs";
-import AccordionCalculator from "@/components/AccordionCalculator";
-import ShopGallery from "@/components/ShopGallery";
+import AttractiveCalculator from "@/components/AttractiveCalculator";
+import ThreePillars from "@/components/ThreePillars";
 import AnimatedReviews from "@/components/AnimatedReviews";
 import LuxuryLocation from "@/components/LuxuryLocation";
-import gallery from "@/data/gallery.json";
 
 const { address, contacts, trust } = siteData;
-/** La galleria compare solo con foto reali (in sviluppo anche vuota, per vedere le cornici da riempire). */
-const showGallery = gallery.photos.length > 0 || process.env.NODE_ENV !== "production";
 
 function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; id: string }) {
   return (
@@ -29,43 +25,36 @@ function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; 
 export default function Home() {
   return (
     <>
-      <LiveTicker />
       <Header />
       <main>
+        {/* 1. Hero · 2. Quotazioni */}
         <HeroVideo />
+        <LiveTicker />
 
-        <section id="chi-siamo" aria-labelledby="about-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-gold">Chi siamo · La nostra storia</div>
-            <ScrollReveal parallax={12}>
-              <AboutUs />
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {showGallery && (
-          <section id="galleria" aria-labelledby="gallery-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
-              <ScrollReveal parallax={0}>
-                <SectionTitle id="gallery-title" eyebrow="Il negozio" title="Entra, guarda, pesa con noi." />
-              </ScrollReveal>
-              <ShopGallery />
-            </div>
-          </section>
-        )}
-
+        {/* 3. Calcolatore */}
         <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="calc-title" eyebrow="Calcola · Domande" title="Quanto vale il tuo oro, adesso." />
+              <SectionTitle id="calc-title" eyebrow="Calcola · Blocca · Sblocca il bonus" title="Quanto vale il tuo oro, adesso." />
             </ScrollReveal>
             <PromoBanner />
             <ScrollReveal delay={0.1} parallax={0}>
-              <AccordionCalculator />
+              <AttractiveCalculator />
             </ScrollReveal>
           </div>
         </section>
 
+        {/* 4. Pilastri */}
+        <section id="perche-noi" aria-labelledby="pillars-title" className="scroll-mt-24 border-b border-border bg-muted/40 py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              <SectionTitle id="pillars-title" eyebrow="Il negozio" title="Trasparenza che puoi vedere." />
+            </ScrollReveal>
+            <ThreePillars />
+          </div>
+        </section>
+
+        {/* 5. Recensioni */}
         <section id="recensioni" aria-labelledby="reviews-title" className="scroll-mt-24 overflow-hidden border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
@@ -75,6 +64,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 6. Vieni a trovarci */}
         <section id="visita" aria-labelledby="visit-title" className="scroll-mt-24 border-b border-border bg-[radial-gradient(ellipse_at_top,#f6efe4,transparent_70%)] py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
