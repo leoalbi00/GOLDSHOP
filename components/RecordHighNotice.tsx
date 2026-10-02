@@ -1,14 +1,14 @@
 "use client";
-import siteData from "@/data/site-data.json";
 import { formatEur } from "@/lib/pricing";
 import { useQuotes } from "@/lib/useQuotes";
 
-const { allTimeHigh } = siteData.pricing;
-
-/** Piccolo avviso in cima alla pagina, visibile solo quando l'oro 24K è pari o sopra il massimo storico registrato. */
+/**
+ * Piccolo avviso in cima alla pagina, visibile solo quando l'oro 24K è pari o sopra il massimo storico.
+ * Il record si aggiorna da solo quando il feed lo supera, quindi l'avviso sparisce appena il prezzo scende.
+ */
 export default function RecordHighNotice() {
-  const { gold24k } = useQuotes();
-  if (gold24k < allTimeHigh.gold24kEurPerGram) return null;
+  const { gold24k, allTimeHigh } = useQuotes();
+  if (gold24k < allTimeHigh.gold24k) return null;
 
   return (
     <a

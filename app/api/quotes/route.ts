@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { referenceQuotes } from "@/lib/pricing";
+import { getLiveQuotes } from "@/lib/server/live-quotes";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Restituisce le quotazioni €/g per caratura con variazione %.
- * Oggi usa i valori di riferimento in data/site-data.json: per quotazioni
- * in tempo reale, sostituire con la lettura da un feed di mercato (`source: "feed"`).
- */
+/** Quotazioni €/g per caratura con variazione %: spot da gold-api.com, valori di riferimento come riserva. */
 export async function GET() {
-  return NextResponse.json(referenceQuotes(), { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(await getLiveQuotes(), { headers: { "Cache-Control": "no-store" } });
 }

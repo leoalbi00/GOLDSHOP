@@ -1,7 +1,7 @@
 import type { Booking } from "@/lib/bookings";
 import { DEFAULT_MARGINS, type MarginSettings } from "@/lib/margins";
 import type { Voucher } from "@/lib/vouchers";
-import { LOGIN_LIMITS, withMarginDefaults, type CompleteResult, type Store } from "@/lib/server/store/types";
+import { LOGIN_LIMITS, withMarginDefaults, type CompleteResult, type QuoteState, type Store } from "@/lib/server/store/types";
 
 /** Esecutore SQL minimo: testo con $1, $2… e parametri; restituisce le righe. */
 export type Sql = (text: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
@@ -174,6 +174,17 @@ export function createPostgresStore(sql: Sql): Store {
           [JSON.stringify(next)],
         );
         return next;
+      },
+      async getQuoteState() {
+        const [row] = await q(`SELECT value FROM settings WHERE key = 'quote-state'`);
+        return row ? json<QuoteState>(row.value) : null;
+      },
+      async setQuoteState(state) {
+        await q(
+          `INSERT INTO settings (key, value, updated_at) VALUES ('quote-state', $1::jsonb, now())
+           ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`,
+          [JSON.stringify(state)],
+        );
       },
     },
 

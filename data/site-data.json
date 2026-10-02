@@ -77,7 +77,7 @@
     "Pagamento Immediato nei termini di legge"
   ],
   "pricing": {
-    "_note": "Valori di riferimento da aggiornare (o sostituire con un feed reale in app/api/quotes/route.ts). prevClose = chiusura precedente, usata per la variazione %. Aggiornati il 2026-10-02 dallo spot gold-api.com (XAU/XAG in EUR, oncia troy 31,1035 g); chiusura precedente non disponibile, posta uguale al valore attuale (variazione 0%).",
+    "_note": "Valori di riserva: il sito legge le quotazioni live da gold-api.com (lib/server/live-quotes.ts) e usa questi solo se il servizio non risponde. prevClose = chiusura precedente, usata per la variazione %.",
     "updatedAt": "2026-10-02",
     "gold24kEurPerGram": 119.28,
     "gold24kPrevClose": 119.28,
@@ -87,7 +87,7 @@
     "hotLeadGrams": 30,
     "volatilityAlertPct": 2,
     "allTimeHigh": {
-      "_note": "Massimo storico dell'oro 24K in €/g. L'avviso 'massimo storico' compare solo quando gold24kEurPerGram è pari o superiore a questo valore. Quando la quotazione supera il record, aggiorna anche questo valore e la data, così l'avviso resta veritiero. Valore da verificare su una fonte ufficiale.",
+      "_note": "Massimo storico di partenza dell'oro 24K in €/g. Con le quotazioni live il record si aggiorna da solo (salvato nell'archivio) quando il prezzo lo supera; l'avviso 'massimo storico' compare solo quando il prezzo è pari o superiore al record. Valore da verificare su una fonte ufficiale.",
       "gold24kEurPerGram": 147.44,
       "date": "2026-03-02"
     }

@@ -1,7 +1,8 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { toSnapshot } from "dinero.js";
-import { estimatePayout, purityById, referenceQuotes } from "@/lib/pricing";
+import { estimatePayout, purityById } from "@/lib/pricing";
+import { getLiveQuotes } from "@/lib/server/live-quotes";
 import { effectiveSpread } from "@/lib/margins";
 import type { Voucher } from "@/lib/vouchers";
 import { getStore } from "@/lib/server/store";
@@ -19,7 +20,7 @@ export const POST = withStore(async (req: NextRequest) => {
   if (!parsed.success || !purity) return error("Caratura o peso non validi", 400);
 
   const { grams } = parsed.data;
-  const { base } = referenceQuotes();
+  const { base } = await getLiveQuotes();
   const store = getStore();
   const spread = effectiveSpread(await store.settings.getMargins(), purity, grams);
   const amountCents = toSnapshot(estimatePayout(purity, grams, base.gold24k, base.silver, spread)).amount;

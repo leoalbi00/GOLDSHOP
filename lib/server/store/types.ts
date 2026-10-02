@@ -2,6 +2,18 @@ import type { Booking } from "@/lib/bookings";
 import type { MarginSettings } from "@/lib/margins";
 import type { OamRecord, Voucher } from "@/lib/vouchers";
 
+/** Stato delle quotazioni live: ultimo prezzo del giorno (per la chiusura precedente) e massimo storico. */
+export interface QuoteState {
+  /** Giorno di Bergamo (YYYY-MM-DD) dell'ultimo prezzo salvato. */
+  day: string;
+  savedAt: string;
+  last: { gold24k: number; silver: number };
+  /** Ultimo prezzo del giorno precedente: base della variazione %. */
+  prev?: { gold24k: number; silver: number };
+  /** Massimo storico dell'oro 24K visto dal feed (€/g). */
+  ath?: { gold24k: number; date: string };
+}
+
 export type CompleteResult = { ok: true; voucher: Voucher } | { ok: false; reason: "not_found" | "expired" | "completed" };
 
 /**
@@ -33,6 +45,8 @@ export interface Store {
   settings: {
     getMargins(): Promise<MarginSettings>;
     updateMargins(fn: (current: MarginSettings) => MarginSettings): Promise<MarginSettings>;
+    getQuoteState(): Promise<QuoteState | null>;
+    setQuoteState(state: QuoteState): Promise<void>;
   };
   /** Tentativi di login falliti: per IP e globali. */
   limiter: {

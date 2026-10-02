@@ -36,6 +36,8 @@ export interface QuotesPayload {
   /** Chiusura precedente, base della variazione %. */
   prev: { gold24k: number; silver: number };
   quotes: Quote[];
+  /** Massimo storico dell'oro 24K (€/g): il più alto tra il record in site-data e quello visto dal feed. */
+  allTimeHigh: { gold24k: number; date: string };
 }
 
 /** Prezzo di borsa €/g per la caratura, prima del margine del negozio. */
@@ -71,6 +73,7 @@ export function referenceQuotes(): QuotesPayload {
     base: { gold24k: p.gold24kEurPerGram, silver: p.silver999EurPerGram },
     prev,
     quotes: buildQuotes(p.gold24kEurPerGram, p.silver999EurPerGram, prev),
+    allTimeHigh: { gold24k: p.allTimeHigh.gold24kEurPerGram, date: p.allTimeHigh.date },
   };
 }
 

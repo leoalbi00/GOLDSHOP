@@ -3,7 +3,7 @@ import type { Booking } from "@/lib/bookings";
 import { DEFAULT_MARGINS, type MarginSettings } from "@/lib/margins";
 import { voucherState, type Voucher } from "@/lib/vouchers";
 import { jsonFile } from "@/lib/server/json-store";
-import { LOGIN_LIMITS, StoreUnavailableError, withMarginDefaults, type CompleteResult, type Store } from "@/lib/server/store/types";
+import { LOGIN_LIMITS, StoreUnavailableError, withMarginDefaults, type CompleteResult, type QuoteState, type Store } from "@/lib/server/store/types";
 
 /**
  * Archivio su file JSON in data/ per lo sviluppo locale (o un server proprio con disco persistente).
@@ -12,6 +12,7 @@ import { LOGIN_LIMITS, StoreUnavailableError, withMarginDefaults, type CompleteR
 export function createFileStore(readOnly: boolean): Store {
   const vouchers = jsonFile<Voucher[]>("store/vouchers.json", []);
   const bookings = jsonFile<Booking[]>("store/bookings.json", []);
+  const quoteState = jsonFile<QuoteState | null>("store/quote-state.json", null);
   const margins = jsonFile<MarginSettings>("margin-settings.json", DEFAULT_MARGINS);
   const guard = () => {
     if (readOnly) throw new StoreUnavailableError();
@@ -110,6 +111,11 @@ export function createFileStore(readOnly: boolean): Store {
           const next = fn(withMarginDefaults(current, DEFAULT_MARGINS));
           return { data: next, result: next };
         });
+      },
+      getQuoteState: () => quoteState.read(),
+      async setQuoteState(state) {
+        guard();
+        await quoteState.update(() => ({ data: state, result: undefined }));
       },
     },
 
