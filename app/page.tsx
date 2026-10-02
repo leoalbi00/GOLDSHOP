@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import HeroVideo from "@/components/HeroVideo";
 import ScrollReveal from "@/components/ScrollReveal";
 import AboutUs from "@/components/AboutUs";
-import OrientationCalculator from "@/components/OrientationCalculator";
+import RecordHighNotice from "@/components/RecordHighNotice";
 import ShopGallery, { availableShopPhotos } from "@/components/ShopGallery";
 import AtmosphereGallery from "@/components/AtmosphereGallery";
 import GoogleReviews from "@/components/GoogleReviews";
@@ -27,6 +27,7 @@ function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; 
 export default function Home() {
   return (
     <>
+      <RecordHighNotice />
       <Header />
       <main>
         <HeroVideo />
@@ -37,15 +38,6 @@ export default function Home() {
             <ScrollReveal parallax={0}>
               <AboutUs />
             </ScrollReveal>
-          </div>
-        </section>
-
-        <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <ScrollReveal parallax={0}>
-              <SectionTitle id="calc-title" eyebrow="Calcolatore di orientamento" title="Una stima indicativa, in grammi." />
-            </ScrollReveal>
-            <OrientationCalculator />
           </div>
         </section>
 

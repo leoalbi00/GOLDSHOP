@@ -85,7 +85,12 @@
     "silver999PrevClose": 0.875,
     "voucherValidityHours": 24,
     "hotLeadGrams": 30,
-    "volatilityAlertPct": 2
+    "volatilityAlertPct": 2,
+    "allTimeHigh": {
+      "_note": "Massimo storico dell'oro 24K in €/g. L'avviso 'massimo storico' compare solo quando gold24kEurPerGram è pari o superiore a questo valore. Quando la quotazione supera il record, aggiorna anche questo valore e la data, così l'avviso resta veritiero. Valore da verificare su una fonte ufficiale.",
+      "gold24kEurPerGram": 147.44,
+      "date": "2026-03-02"
+    }
   },
   "links": {
     "googleReviews": "https://www.google.com/maps/search/?api=1&query=Compro+Oro+123+Via+Angelo+Maj+39B+Bergamo",

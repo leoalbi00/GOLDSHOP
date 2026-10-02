@@ -5,7 +5,7 @@ import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const { address, hours } = siteData;
+const { address, hours, contacts } = siteData;
 
 /** Stato del negozio in tempo reale nell'header, con orari completi nel popover. */
 export default function LiveStoreBadge({ className }: { className?: string }) {
@@ -49,8 +49,8 @@ export default function LiveStoreBadge({ className }: { className?: string }) {
             : `${s ? reopensLabel(s) : "Chiuso"}. Puoi chiamarci o scriverci su WhatsApp.`}
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2 text-xs font-semibold">
-          <a href="#calcolatore" className="border border-foreground px-3 py-2 text-center transition-colors hover:bg-foreground hover:text-background">
-            Calcola il valore
+          <a href={`tel:${contacts.phoneIntl}`} className="border border-foreground px-3 py-2 text-center transition-colors hover:bg-foreground hover:text-background">
+            Chiama
           </a>
           <a href="#contatti" className="border border-hairline px-3 py-2 text-center transition-colors hover:bg-muted">
             Indicazioni

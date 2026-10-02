@@ -65,16 +65,16 @@ export default function HeroVideo() {
 
         <motion.div {...fade(0.45)} className="mt-10 flex flex-wrap gap-3">
           <a
-            href="#calcolatore"
+            href="#contatti"
             className="inline-flex h-13 items-center bg-[#e2c58f] px-7 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-foreground transition-colors hover:bg-[#f0dcae]"
           >
-            Stima indicativa
+            Valutazione gratuita
           </a>
           <a
-            href="#contatti"
+            href="#chi-siamo"
             className="inline-flex h-13 items-center border border-white/40 px-7 py-4 text-sm font-semibold uppercase tracking-[0.14em] transition-colors hover:bg-white hover:text-foreground"
           >
-            Contatti e orari
+            Chi siamo
           </a>
         </motion.div>
       </div>

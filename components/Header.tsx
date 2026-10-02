@@ -6,7 +6,7 @@ const { contacts } = siteData;
 
 const NAV = [
   { href: "#chi-siamo", label: "Chi siamo" },
-  { href: "#calcolatore", label: "Stima" },
+  { href: "#galleria", label: "Oro e preziosi" },
   { href: "#recensioni", label: "Recensioni" },
   { href: "#contatti", label: "Contatti" },
 ];
