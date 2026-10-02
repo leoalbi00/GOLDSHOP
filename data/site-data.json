@@ -77,12 +77,12 @@
     "Pagamento Immediato nei termini di legge"
   ],
   "pricing": {
-    "_note": "Valori di riferimento da aggiornare (o sostituire con un feed reale in app/api/quotes/route.ts). prevClose = chiusura precedente, usata per la variazione %.",
-    "updatedAt": "2026-10-01",
-    "gold24kEurPerGram": 74.8,
-    "gold24kPrevClose": 74.5,
-    "silver999EurPerGram": 0.88,
-    "silver999PrevClose": 0.875,
+    "_note": "Valori di riferimento da aggiornare (o sostituire con un feed reale in app/api/quotes/route.ts). prevClose = chiusura precedente, usata per la variazione %. Aggiornati il 2026-10-02 dallo spot gold-api.com (XAU/XAG in EUR, oncia troy 31,1035 g); chiusura precedente non disponibile, posta uguale al valore attuale (variazione 0%).",
+    "updatedAt": "2026-10-02",
+    "gold24kEurPerGram": 119.28,
+    "gold24kPrevClose": 119.28,
+    "silver999EurPerGram": 1.744,
+    "silver999PrevClose": 1.744,
     "voucherValidityHours": 24,
     "hotLeadGrams": 30,
     "volatilityAlertPct": 2,
