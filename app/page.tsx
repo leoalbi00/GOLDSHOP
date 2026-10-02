@@ -5,11 +5,12 @@ import ScrollReveal from "@/components/ScrollReveal";
 import AboutUs from "@/components/AboutUs";
 import OrientationCalculator from "@/components/OrientationCalculator";
 import ShopGallery, { availableShopPhotos } from "@/components/ShopGallery";
+import AtmosphereGallery from "@/components/AtmosphereGallery";
 import GoogleReviews from "@/components/GoogleReviews";
 import ContactSection from "@/components/ContactSection";
 
 const { address, contacts, trust } = siteData;
-/** La sezione foto compare solo con foto reali in public/images/shop/. */
+/** Con foto reali in public/images/shop/ si mostra il negozio; altrimenti foto di atmosfera, senza spacciarle per la sede. */
 const shopPhotos = availableShopPhotos();
 
 function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; id: string }) {
@@ -48,16 +49,18 @@ export default function Home() {
           </div>
         </section>
 
-        {shopPhotos.length > 0 && (
-          <section id="negozio" aria-labelledby="shop-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
-              <ScrollReveal parallax={0}>
-                <SectionTitle id="shop-title" eyebrow="Il negozio" title="La nostra sede a Bergamo." />
-              </ScrollReveal>
-              <ShopGallery photos={shopPhotos} />
-            </div>
-          </section>
-        )}
+        <section id="galleria" aria-labelledby="gallery-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <ScrollReveal parallax={0}>
+              {shopPhotos.length > 0 ? (
+                <SectionTitle id="gallery-title" eyebrow="Il negozio" title="La nostra sede a Bergamo." />
+              ) : (
+                <SectionTitle id="gallery-title" eyebrow="Oro · Monete · Gioielli" title="Ciò che valutiamo ogni giorno." />
+              )}
+            </ScrollReveal>
+            {shopPhotos.length > 0 ? <ShopGallery photos={shopPhotos} /> : <AtmosphereGallery />}
+          </div>
+        </section>
 
         <section id="recensioni" aria-labelledby="reviews-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">

@@ -9,5 +9,5 @@ Carica qui le foto originali della sede (scattate da voi o di cui avete i diritt
 | `vip-office.jpg` | Salotto di accoglienza e stima |
 
 Formato consigliato: JPG orizzontale 4:3, lato lungo ~2000 px, sotto 600 KB.
-La sezione "Il negozio" mostra solo le foto presenti e resta nascosta finché la cartella non ne contiene almeno una.
+Appena la cartella contiene almeno una di queste foto, la sezione diventa "La nostra sede a Bergamo" e sostituisce le foto di atmosfera (public/images/atmosphere/).
 Dopo averle aggiunte serve un nuovo deploy (commit + push).
