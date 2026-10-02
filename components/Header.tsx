@@ -5,10 +5,10 @@ import LiveStoreBadge from "@/components/LiveStoreBadge";
 const { contacts } = siteData;
 
 const NAV = [
-  { href: "#calcolatore", label: "Calcola" },
-  { href: "#perche-noi", label: "Perché noi" },
+  { href: "#chi-siamo", label: "Chi siamo" },
+  { href: "#calcolatore", label: "Stima" },
   { href: "#recensioni", label: "Recensioni" },
-  { href: "#visita", label: "Vieni a trovarci" },
+  { href: "#contatti", label: "Contatti" },
 ];
 
 export default function Header() {
@@ -17,7 +17,7 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6">
         <a href="#" className="whitespace-nowrap leading-none" aria-label={`${siteData.name}, torna all'inizio`}>
           <span className="font-serif text-[1.75rem] font-medium tracking-tight text-foreground">
-            Compro Oro <span className="italic text-gold">123</span>
+            123 <span className="italic text-gold">Gold</span>
           </span>
         </a>
 

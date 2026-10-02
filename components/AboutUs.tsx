@@ -19,11 +19,11 @@ export default function AboutUs() {
     <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
       <div className="lg:col-span-7">
         <h2 id="about-title" className="font-serif text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl">
-          Un punto di riferimento a Bergamo per la stima dell&apos;oro
+          Trasparenza, a vista.
         </h2>
         <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground">
           {about.story ||
-            `Da anni nel cuore di Bergamo, in ${address.street}, 123 Gold unisce la massima trasparenza normativa (iscrizione OAM) con la riservatezza di una gioielleria d'alta gamma. Nessuna stima approssimativa: ogni perizia avviene a vista con bilance omologate e sulla quotazione di Borsa aggiornata.`}
+            `Siamo a Bergamo, in ${address.street}, a pochi passi dalla Stazione. Ogni oggetto viene pesato davanti a te su una bilancia omologata con il display rivolto verso il cliente, e il titolo è verificato insieme a te. Il prezzo parte dalla quotazione ufficiale dei metalli preziosi del giorno, e ogni operazione è registrata secondo le regole del Registro Operatori Compro Oro OAM.`}
         </p>
       </div>
 

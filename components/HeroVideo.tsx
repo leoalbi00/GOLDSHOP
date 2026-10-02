@@ -1,45 +1,18 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { ArrowDown, MapPin, Scale, ShieldCheck } from "lucide-react";
-import siteData from "@/data/site-data.json";
-import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
-import { cn } from "@/lib/cn";
-
-const TITLE = "Valutazione Oro in Tempo Reale a Bergamo";
-const { address, trust } = siteData;
-
-/** Badge in tempo reale (ora di Bergamo): "Aperto ora" solo quando il negozio è davvero aperto. */
-function OpenNowBadge() {
-  const s = useStoreStatus();
-  return (
-    <a
-      href="#visita"
-      className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold backdrop-blur-md transition-colors",
-        s?.open ? "border-emerald-300/50 bg-emerald-400/15 hover:bg-emerald-400/25" : "border-white/20 bg-white/10 hover:bg-white/20",
-      )}
-    >
-      <span className="relative flex size-2">
-        {s?.open && <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75 motion-reduce:hidden" />}
-        <span className={cn("relative inline-flex size-2 rounded-full", s?.open ? "bg-emerald-400" : s ? "bg-rose-400" : "bg-white/50")} />
-      </span>
-      {!s ? address.street : s.open ? `Aperto ora in ${address.street}` : `${reopensLabel(s)} · ${address.street}`}
-    </a>
-  );
-}
+import { ShieldCheck } from "lucide-react";
 
 /**
- * Hero a tutto schermo con video di sfondo (Mixkit, licenza gratuita, 720p senza audio, ~650 KB).
- * Con prefers-reduced-motion il video resta fermo sul poster e il titolo compare senza animazione.
+ * Hero istituzionale con video di sfondo (Mixkit, licenza gratuita, 720p senza audio, ~650 KB).
+ * Con prefers-reduced-motion il video resta fermo sul poster e i testi compaiono senza animazione.
  */
 export default function HeroVideo() {
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", reduce ? "0%" : "18%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduce ? 1 : 0]);
+  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", reduce ? "0%" : "14%"]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -48,15 +21,18 @@ export default function HeroVideo() {
     else void v.play().catch(() => undefined);
   }, [reduce]);
 
-  const words = TITLE.split(" ");
-  let index = 0;
+  const fade = (delay: number) => ({
+    initial: reduce ? false : { opacity: 0, y: 14 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as const },
+  });
 
   return (
-    <section ref={sectionRef} className="relative isolate flex min-h-[88svh] items-end overflow-hidden bg-foreground text-white">
+    <section ref={sectionRef} className="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-foreground text-white">
       <motion.div style={{ y: videoY }} className="absolute inset-0 -z-10">
         <video
           ref={videoRef}
-          className="h-full w-full scale-105 object-cover blur-[2px]"
+          className="h-full w-full scale-105 object-cover"
           src="/videos/hero-gold.mp4"
           poster="/videos/hero-gold-poster.jpg"
           autoPlay
@@ -67,86 +43,41 @@ export default function HeroVideo() {
           aria-hidden
         />
       </motion.div>
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0b0f17]/95 via-[#0b0f17]/60 to-[#0b0f17]/35" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_20%_100%,rgba(146,64,14,0.35),transparent_60%)]" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-[#0b0f17]/95 via-[#0b0f17]/65 to-[#0b0f17]/40" />
 
-      <motion.div style={{ opacity: contentOpacity }} className="mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 lg:pb-24">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-wrap items-center gap-2"
-        >
-          <OpenNowBadge />
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium backdrop-blur-md">
-            <ShieldCheck className="size-3.5 text-emerald-300" /> Iscritto Registro OAM
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium backdrop-blur-md">
-            <Scale className="size-3.5 text-[#e2c58f]" /> Bilancia omologata
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium backdrop-blur-md">
-            ★ {trust.googleRating.toFixed(1).replace(".", ",")} su Google
+      <div className="mx-auto w-full max-w-7xl px-4 pb-20 pt-32 sm:px-6 lg:pb-28">
+        <motion.div {...fade(0)}>
+          <span className="inline-flex items-center gap-2 border border-[#e2c58f]/50 bg-white/5 px-4 py-2 text-xs font-medium tracking-wide backdrop-blur-md">
+            <ShieldCheck className="size-4 text-[#e2c58f]" /> Iscrizione Registro Operatori Compro Oro OAM
           </span>
         </motion.div>
 
-        <h1
-          aria-label={TITLE}
-          className="mt-8 max-w-5xl text-balance font-serif text-[clamp(2.75rem,7.5vw,6.5rem)] font-medium leading-[0.98] tracking-[-0.02em]"
+        <motion.h1
+          {...fade(0.15)}
+          className="mt-8 font-serif text-[clamp(3.25rem,9vw,7.5rem)] font-medium leading-[0.95] tracking-[-0.02em]"
         >
-          {words.map((word, w) => (
-            <span key={w} aria-hidden className="inline-block whitespace-nowrap">
-              {[...word].map((ch) => {
-                const i = index++;
-                return (
-                  <motion.span
-                    key={i}
-                    className={`inline-block ${word === "Oro" ? "italic text-[#e2c58f]" : ""}`}
-                    initial={reduce ? false : { opacity: 0, y: "0.4em", filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ duration: 0.5, delay: 0.25 + i * 0.03, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    {ch}
-                  </motion.span>
-                );
-              })}
-              {w < words.length - 1 && <span className="inline-block">&nbsp;</span>}
-            </span>
-          ))}
-        </h1>
+          123 <span className="italic text-[#e2c58f]">Gold</span> — Bergamo
+        </motion.h1>
 
-        <motion.p
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 + TITLE.length * 0.03 }}
-          className="mt-6 flex max-w-2xl items-start gap-2 text-lg leading-relaxed text-white/80 md:text-xl"
-        >
-          <MapPin className="mt-1.5 size-5 shrink-0 text-[#e2c58f]" />
-          <span>
-            <strong className="font-semibold text-white">{address.street}</strong> — Bilancia omologata a vista e pagamento
-            immediato
-          </span>
+        <motion.p {...fade(0.3)} className="mt-6 max-w-2xl text-lg text-white/80 md:text-xl">
+          Compro Oro e Quotazioni Preziosi <span className="mx-2 text-[#e2c58f]">|</span> Via Angelo Maj 39/B
         </motion.p>
 
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.45 + TITLE.length * 0.03 }}
-          className="mt-10 flex flex-wrap gap-3"
-        >
+        <motion.div {...fade(0.45)} className="mt-10 flex flex-wrap gap-3">
           <a
             href="#calcolatore"
-            className="inline-flex h-14 items-center gap-2 bg-[#e2c58f] px-7 text-sm font-bold uppercase tracking-[0.12em] text-foreground shadow-[0_4px_0_0_#92400e] transition-[transform,box-shadow] active:translate-y-[4px] active:shadow-none"
+            className="inline-flex h-13 items-center bg-[#e2c58f] px-7 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-foreground transition-colors hover:bg-[#f0dcae]"
           >
-            Calcola il valore <ArrowDown className="size-4" />
+            Stima indicativa
           </a>
           <a
-            href="#visita"
-            className="inline-flex h-14 items-center gap-2 border border-white/40 px-7 text-sm font-semibold uppercase tracking-[0.12em] backdrop-blur-sm transition-colors hover:bg-white hover:text-foreground"
+            href="#contatti"
+            className="inline-flex h-13 items-center border border-white/40 px-7 py-4 text-sm font-semibold uppercase tracking-[0.14em] transition-colors hover:bg-white hover:text-foreground"
           >
-            Dove siamo
+            Contatti e orari
           </a>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }

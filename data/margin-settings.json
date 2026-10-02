@@ -26,13 +26,6 @@
       "active": false,
       "minGrams": 50,
       "bonusPerGram": 1.0
-    },
-    "vip": {
-      "active": true,
-      "bonusMinGrams": 20,
-      "bonusPerGram": 0.5,
-      "vipMinGrams": 50,
-      "vipBonusPerGram": 1.2
     }
   }
 }

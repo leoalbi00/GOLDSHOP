@@ -1,15 +1,16 @@
 import siteData from "@/data/site-data.json";
-import LiveTicker from "@/components/LiveTicker";
 import Header from "@/components/Header";
 import HeroVideo from "@/components/HeroVideo";
 import ScrollReveal from "@/components/ScrollReveal";
-import PromoBanner from "@/components/PromoBanner";
-import AttractiveCalculator from "@/components/AttractiveCalculator";
-import ThreePillars from "@/components/ThreePillars";
-import AnimatedReviews from "@/components/AnimatedReviews";
-import LuxuryLocation from "@/components/LuxuryLocation";
+import AboutUs from "@/components/AboutUs";
+import OrientationCalculator from "@/components/OrientationCalculator";
+import ShopGallery, { availableShopPhotos } from "@/components/ShopGallery";
+import GoogleReviews from "@/components/GoogleReviews";
+import ContactSection from "@/components/ContactSection";
 
 const { address, contacts, trust } = siteData;
+/** La sezione foto compare solo con foto reali in public/images/shop/. */
+const shopPhotos = availableShopPhotos();
 
 function SectionTitle({ eyebrow, title, id }: { eyebrow: string; title: string; id: string }) {
   return (
@@ -27,52 +28,52 @@ export default function Home() {
     <>
       <Header />
       <main>
-        {/* 1. Hero · 2. Quotazioni */}
         <HeroVideo />
-        <LiveTicker />
 
-        {/* 3. Calcolatore */}
+        <section id="chi-siamo" aria-labelledby="about-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-8 text-xs font-semibold uppercase tracking-[0.24em] text-gold">Chi siamo · Trasparenza</div>
+            <ScrollReveal parallax={0}>
+              <AboutUs />
+            </ScrollReveal>
+          </div>
+        </section>
+
         <section id="calcolatore" aria-labelledby="calc-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="calc-title" eyebrow="Calcola · Blocca · Sblocca il bonus" title="Quanto vale il tuo oro, adesso." />
+              <SectionTitle id="calc-title" eyebrow="Calcolatore di orientamento" title="Una stima indicativa, in grammi." />
             </ScrollReveal>
-            <PromoBanner />
-            <ScrollReveal delay={0.1} parallax={0}>
-              <AttractiveCalculator />
-            </ScrollReveal>
+            <OrientationCalculator />
           </div>
         </section>
 
-        {/* 4. Pilastri */}
-        <section id="perche-noi" aria-labelledby="pillars-title" className="scroll-mt-24 border-b border-border bg-muted/40 py-20 lg:py-28">
+        {shopPhotos.length > 0 && (
+          <section id="negozio" aria-labelledby="shop-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <ScrollReveal parallax={0}>
+                <SectionTitle id="shop-title" eyebrow="Il negozio" title="La nostra sede a Bergamo." />
+              </ScrollReveal>
+              <ShopGallery photos={shopPhotos} />
+            </div>
+          </section>
+        )}
+
+        <section id="recensioni" aria-labelledby="reviews-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="pillars-title" eyebrow="Il negozio" title="Trasparenza che puoi vedere." />
+              <SectionTitle id="reviews-title" eyebrow="Recensioni Google" title="Cosa dicono i nostri clienti." />
             </ScrollReveal>
-            <ThreePillars />
+            <GoogleReviews />
           </div>
         </section>
 
-        {/* 5. Recensioni */}
-        <section id="recensioni" aria-labelledby="reviews-title" className="scroll-mt-24 overflow-hidden border-b border-border py-20 lg:py-28">
+        <section id="contatti" aria-labelledby="contact-title" className="scroll-mt-24 border-b border-border py-20 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <ScrollReveal parallax={0}>
-              <SectionTitle id="reviews-title" eyebrow="Dicono di noi" title="La fiducia di Bergamo." />
+              <SectionTitle id="contact-title" eyebrow="Contatti & orari" title="Vieni a trovarci." />
             </ScrollReveal>
-            <AnimatedReviews />
-          </div>
-        </section>
-
-        {/* 6. Vieni a trovarci */}
-        <section id="visita" aria-labelledby="visit-title" className="scroll-mt-24 border-b border-border bg-[radial-gradient(ellipse_at_top,#f6efe4,transparent_70%)] py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <ScrollReveal parallax={0}>
-              <SectionTitle id="visit-title" eyebrow="Vieni a trovarci" title="Vieni a trovarci in Sede" />
-            </ScrollReveal>
-            <ScrollReveal delay={0.1} parallax={16}>
-              <LuxuryLocation />
-            </ScrollReveal>
+            <ContactSection />
           </div>
         </section>
       </main>
@@ -80,7 +81,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 text-sm sm:px-6 md:grid-cols-12">
           <div className="md:col-span-5">
             <div className="font-serif text-3xl font-medium text-background">
-              Compro Oro <span className="italic text-[#d6b37a]">123</span>
+              123 <span className="italic text-[#d6b37a]">Gold</span>
             </div>
             <div className="mt-3">
               {address.street}, {address.cap} {address.city} ({address.province})

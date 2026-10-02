@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "123gold · Compro Oro Bergamo Centro | Via Angelo Maj 39/B, zona Stazione",
   applicationName: siteData.shortName,
   description:
-    "Compro Oro 123 a Bergamo Centro: valutazione gratuita, quotazione oro aggiornata, prezzo bloccato 24h e pagamento immediato. Iscritto Registro OAM. Via Angelo Maj 39/B.",
+    "Compro Oro 123 a Bergamo Centro: valutazione gratuita, pesata a vista su bilancia omologata e pagamento immediato. Iscritto Registro OAM. Via Angelo Maj 39/B.",
   keywords: [
     "compro oro Bergamo",
     "compro oro Bergamo centro",
@@ -40,12 +40,12 @@ export const metadata: Metadata = {
     siteName: siteData.shortName,
     url: "/",
     title: "123gold · Compro Oro Bergamo Centro",
-    description: "Calcola online il valore del tuo oro e blocca il prezzo per 24 ore. Via Angelo Maj 39/B, zona Stazione.",
+    description: "Compro oro e quotazioni preziosi. Pesata a vista, iscritto Registro OAM. Via Angelo Maj 39/B, zona Stazione.",
   },
   twitter: {
     card: "summary_large_image",
     title: "123gold · Compro Oro Bergamo Centro",
-    description: "Stima immediata, prezzo bloccato 24h, pagamento immediato. Via Angelo Maj 39/B, Bergamo.",
+    description: "Valutazione gratuita, pesata a vista e pagamento immediato. Via Angelo Maj 39/B, Bergamo.",
   },
   alternates: { canonical: "/" },
   other: {

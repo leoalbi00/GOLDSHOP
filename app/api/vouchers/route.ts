@@ -3,7 +3,7 @@ import { z } from "zod";
 import { toSnapshot } from "dinero.js";
 import siteData from "@/data/site-data.json";
 import { estimatePayout, purityById, referenceQuotes } from "@/lib/pricing";
-import { effectiveSpread, vipTier } from "@/lib/margins";
+import { effectiveSpread } from "@/lib/margins";
 import type { Voucher } from "@/lib/vouchers";
 import { getStore } from "@/lib/server/store";
 import { newVoucherCode } from "@/lib/server/ids";
@@ -29,9 +29,7 @@ export const POST = withStore(async (req: NextRequest) => {
   const grams = Math.round(parsed.data.grams * 10) / 10;
   const { base } = referenceQuotes();
   // Spread già al netto delle promozioni attive (stagionale, lotti, Heritage VIP).
-  const margins = await store.settings.getMargins();
-  const spread = effectiveSpread(margins, purity, grams);
-  const tier = vipTier(margins, purity, grams);
+  const spread = effectiveSpread(await store.settings.getMargins(), purity, grams);
   const amountCents = toSnapshot(estimatePayout(purity, grams, base.gold24k, base.silver, spread)).amount;
   const fullCents = toSnapshot(estimatePayout(purity, grams, base.gold24k, base.silver, 0)).amount;
 
@@ -45,8 +43,6 @@ export const POST = withStore(async (req: NextRequest) => {
     amountCents,
     marginCents: fullCents - amountCents,
     spreadPerGram: spread,
-    vipLevel: tier.level,
-    vipBonusPerGram: tier.bonusPerGram,
     baseAtLock: purity.metal === "gold" ? base.gold24k : base.silver,
     createdAt: now.toISOString(),
     expiresAt: new Date(now.getTime() + siteData.pricing.voucherValidityHours * 3600_000).toISOString(),

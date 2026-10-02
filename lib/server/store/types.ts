@@ -61,7 +61,6 @@ export function withMarginDefaults(saved: Partial<MarginSettings> | null, defaul
       seasonal: { ...defaults.promotions.seasonal, ...saved?.promotions?.seasonal },
       heritage: { ...defaults.promotions.heritage, ...saved?.promotions?.heritage },
       bulk: { ...defaults.promotions.bulk, ...saved?.promotions?.bulk },
-      vip: { ...defaults.promotions.vip, ...saved?.promotions?.vip },
     },
   };
 }

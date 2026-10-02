@@ -5,7 +5,7 @@ import { reopensLabel, useStoreStatus } from "@/lib/useStoreStatus";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const { address, hours, pricing } = siteData;
+const { address, hours } = siteData;
 
 /** Stato del negozio in tempo reale nell'header, con orari completi nel popover. */
 export default function LiveStoreBadge({ className }: { className?: string }) {
@@ -25,7 +25,7 @@ export default function LiveStoreBadge({ className }: { className?: string }) {
             {s && (
               <span className="hidden normal-case tracking-normal 2xl:inline">
                 <span className="opacity-40">—</span>{" "}
-                {open ? `${address.street}, ${address.city}` : `${reopensLabel(s)} · Blocca il prezzo online ${pricing.voucherValidityHours}h`}
+                {open ? `${address.street}, ${address.city}` : reopensLabel(s)}
               </span>
             )}
             <ChevronDown className="size-3 opacity-60 transition-transform group-data-[state=open]:rotate-180" />
@@ -46,13 +46,13 @@ export default function LiveStoreBadge({ className }: { className?: string }) {
         <p className="mt-3 text-xs text-muted-foreground">
           {open
             ? `Aperto fino alle ${s?.closesAt}. Pesatura a vista su bilancia omologata.`
-            : `${s ? reopensLabel(s) : "Chiuso"}. Intanto puoi bloccare il prezzo online per ${pricing.voucherValidityHours} ore.`}
+            : `${s ? reopensLabel(s) : "Chiuso"}. Puoi chiamarci o scriverci su WhatsApp.`}
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2 text-xs font-semibold">
           <a href="#calcolatore" className="border border-foreground px-3 py-2 text-center transition-colors hover:bg-foreground hover:text-background">
-            Blocca il prezzo
+            Calcola il valore
           </a>
-          <a href="#visita" className="border border-hairline px-3 py-2 text-center transition-colors hover:bg-muted">
+          <a href="#contatti" className="border border-hairline px-3 py-2 text-center transition-colors hover:bg-muted">
             Indicazioni
           </a>
         </div>

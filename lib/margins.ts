@@ -12,11 +12,6 @@ export interface Promotions {
   heritage: { active: boolean; minGrams: number; bonusPerGram: number };
   /** "Bonus lotti": bonus €/g sui lotti d'oro oltre la soglia (es. +1,00 €/g oltre 50 g). */
   bulk: { active: boolean; minGrams: number; bonusPerGram: number };
-  /**
-   * Livelli VIP del calcolatore sull'oro, non cumulabili tra loro: da `bonusMinGrams` g "Bonus sbloccato",
-   * oltre `vipMinGrams` g "Trattamento VIP" con perizia nel salotto riservato.
-   */
-  vip: { active: boolean; bonusMinGrams: number; bonusPerGram: number; vipMinGrams: number; vipBonusPerGram: number };
 }
 
 export interface MarginSettings {
@@ -50,16 +45,6 @@ export const marginSettingsSchema = z.object({
         .object({ active: z.boolean(), minGrams: z.number().min(1).max(100000), bonusPerGram: z.number().min(0).max(20) })
         .partial()
         .optional(),
-      vip: z
-        .object({
-          active: z.boolean(),
-          bonusMinGrams: z.number().min(1).max(100000),
-          bonusPerGram: z.number().min(0).max(20),
-          vipMinGrams: z.number().min(1).max(100000),
-          vipBonusPerGram: z.number().min(0).max(20),
-        })
-        .partial()
-        .optional(),
     })
     .optional(),
 });
@@ -71,31 +56,10 @@ export function spreadFor(settings: MarginSettings, purityId: string): number {
 }
 
 export interface AppliedPromo {
-  id: "seasonal" | "heritage" | "bulk" | "vip";
+  id: "seasonal" | "heritage" | "bulk";
   label: string;
   bonusPerGram: number;
 }
-
-export type VipLevel = "standard" | "bonus" | "vip";
-
-export interface VipTier {
-  level: VipLevel;
-  bonusPerGram: number;
-  /** Prossimo livello raggiungibile aggiungendo grammi, se esiste. */
-  next?: { level: Exclude<VipLevel, "standard">; minGrams: number; bonusPerGram: number };
-}
-
-/** Livello VIP per caratura e peso: solo oro e solo con la promozione attiva. */
-export function vipTier(settings: MarginSettings, purity: Purity, grams: number): VipTier {
-  const v = { ...DEFAULT_MARGINS.promotions.vip, ...settings.promotions?.vip };
-  if (!v.active || purity.metal !== "gold") return { level: "standard", bonusPerGram: 0 };
-  if (grams > v.vipMinGrams) return { level: "vip", bonusPerGram: v.vipBonusPerGram };
-  const vipNext = { level: "vip" as const, minGrams: v.vipMinGrams, bonusPerGram: v.vipBonusPerGram };
-  if (grams >= v.bonusMinGrams) return { level: "bonus", bonusPerGram: v.bonusPerGram, next: vipNext };
-  return { level: "standard", bonusPerGram: 0, next: { level: "bonus", minGrams: v.bonusMinGrams, bonusPerGram: v.bonusPerGram } };
-}
-
-export const VIP_LABEL: Record<Exclude<VipLevel, "standard">, string> = { bonus: "Bonus sbloccato", vip: "Trattamento VIP" };
 
 /** Promozioni attive che si applicano a questa caratura e a questo peso. */
 export function promosFor(settings: MarginSettings, purity: Purity, grams: number): AppliedPromo[] {
@@ -110,8 +74,6 @@ export function promosFor(settings: MarginSettings, purity: Purity, grams: numbe
   if (p.heritage.active && purity.metal === "gold" && grams > p.heritage.minGrams) {
     out.push({ id: "heritage", label: "Heritage VIP", bonusPerGram: p.heritage.bonusPerGram });
   }
-  const tier = vipTier(settings, purity, grams);
-  if (tier.level !== "standard") out.push({ id: "vip", label: VIP_LABEL[tier.level], bonusPerGram: tier.bonusPerGram });
   return out;
 }
 

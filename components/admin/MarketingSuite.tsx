@@ -93,12 +93,7 @@ function PromotionsPanel() {
 
   const save = async (
     key: string,
-    patch: {
-      seasonal?: Partial<Promotions["seasonal"]>;
-      heritage?: Partial<Promotions["heritage"]>;
-      bulk?: Partial<Promotions["bulk"]>;
-      vip?: Partial<Promotions["vip"]>;
-    },
+    patch: { seasonal?: Partial<Promotions["seasonal"]>; heritage?: Partial<Promotions["heritage"]>; bulk?: Partial<Promotions["bulk"]> },
   ) => {
     setSaving(key);
     try {
@@ -184,22 +179,6 @@ function PromotionsPanel() {
           bonus={promos.bulk.bonusPerGram}
           onSave={(v) => void save("bulk", { bulk: v })}
         />
-      </div>
-      <div className={cn("border-2 p-5 lg:col-span-2", promos.vip.active ? "border-gold bg-gold-soft" : "border-hairline")}>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 font-semibold">
-              <Crown className="size-4 text-gold" /> Livelli VIP del calcolatore
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Oro da {promos.vip.bonusMinGrams} g: +{formatEur(promos.vip.bonusPerGram)}/g. Oltre {promos.vip.vipMinGrams} g: +
-              {formatEur(promos.vip.vipBonusPerGram)}/g e perizia nel salotto riservato. I due livelli non si sommano tra loro, ma si sommano alle altre promozioni attive.
-            </p>
-          </div>
-          {saving === "vip" ? <Loader2 className="size-5 animate-spin" /> : (
-            <Switch label="Attiva livelli VIP" checked={promos.vip.active} onChange={(v) => void save("vip", { vip: { active: v } })} />
-          )}
-        </div>
       </div>
       <p className="text-xs text-muted-foreground lg:col-span-2">
         I bonus riducono lo spread e valgono anche per i voucher emessi mentre la promozione è attiva. Il prezzo al cliente non supera mai la quotazione di Borsa.

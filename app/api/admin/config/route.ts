@@ -24,7 +24,6 @@ export const PUT = withStore(async (req: NextRequest) => {
         seasonal: { ...current.promotions.seasonal, ...promotions.seasonal },
         heritage: { ...current.promotions.heritage, ...promotions.heritage },
         bulk: { ...current.promotions.bulk, ...promotions.bulk },
-        vip: { ...current.promotions.vip, ...promotions.vip },
       },
     }),
   );
